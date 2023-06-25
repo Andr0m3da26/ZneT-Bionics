@@ -7,9 +7,20 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
-final helloWorldProvider = Provider<String>((ref) {
-  return 'Hello world';
+final screenIndexProvider = NotifierProvider<ScreenIndex, int>(() {
+  return ScreenIndex();
 });
+
+class ScreenIndex extends Notifier<int> {
+  @override
+  int build() {
+    return 0;
+  }
+
+  void changeScreen(index) {
+    state = index;
+  }
+}
 
 final cameraToggleProvider = NotifierProvider<IsCameraToggle, bool>(() {
   return IsCameraToggle();

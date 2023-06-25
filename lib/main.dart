@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:providerarchitecturetest/screens/analysisscreen.dart';
+import 'package:providerarchitecturetest/screens/graphrackscreen.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:providerarchitecturetest/widgets/dropdown.dart';
-import 'package:providerarchitecturetest/widgets/videostream.dart';
+import 'package:providerarchitecturetest/widgets/navbar.dart';
 
 // We create a "provider", which will store a value (here "Hello world").
 // By using a provider, this allows us to mock/override the value exposed.
@@ -25,27 +25,20 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // final String value = ref.watch(helloWorldProvider);
     // final bool isCameraToggle = ref.watch(cameraToggleProvider);
+    final int _selectedIndex = ref.watch(screenIndexProvider);
 
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Example')),
-        body: Row(
-          children: [
-            IconButtonWithAnimatedToolbar(
-              // This is the widget we created
-              onCameraOptionSelected: () {
-                ref.read(cameraToggleProvider.notifier).toggle();
-              },
-              onCameraOptionDeselected: () {
-                ref.read(cameraToggleProvider.notifier).toggle();
-              },
-              onGraphOptionSelected: () {},
-              onGraphOptionDeselected: () {},
-            ),
-            VideoStream(),
+        home: Scaffold(
+      body: Column(children: [
+        NavbarContainer(),
+        IndexedStack(
+          index: _selectedIndex,
+          children: const [
+            AnalysisScreen(),
+            GraphRackScreen(),
           ],
         ),
-      ),
-    );
+      ]),
+    ));
   }
 }
