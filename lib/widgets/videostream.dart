@@ -13,8 +13,6 @@ class VideoStream extends ConsumerWidget {
       final videoStream = ref.watch(videoStreamProvider);
       return videoStream.when(
         data: (data) {
-          // data = data as Map<String, dynamic>;
-          debugPrint(data['keypoints'].toString());
           return Image.memory(
             data['image'],
             gaplessPlayback: true,
