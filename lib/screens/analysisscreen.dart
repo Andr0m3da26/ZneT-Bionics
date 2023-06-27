@@ -3,6 +3,7 @@ import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:providerarchitecturetest/widgets/dropdown.dart';
+import 'package:providerarchitecturetest/widgets/filetree.dart';
 import 'package:providerarchitecturetest/widgets/videostream.dart';
 
 class AnalysisScreen extends ConsumerWidget {
@@ -12,6 +13,12 @@ class AnalysisScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
+        SizedBox(
+          width: 300,
+          height: 500,
+          child: FileExplorer(
+              directoryPath: r"C:\Users\kiera\OneDrive\Documents\Projects"),
+        ),
         IconButtonWithAnimatedToolbar(
           // This is the widget we created
           onCameraOptionSelected: () {
