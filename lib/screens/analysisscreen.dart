@@ -17,7 +17,8 @@ class AnalysisScreen extends ConsumerWidget {
           width: 300,
           height: 500,
           child: FileExplorer(
-              directoryPath: r"C:\Users\kiera\OneDrive\Documents\Projects"),
+              directoryPath: r"C:\Users\kiera\OneDrive\Documents\Projects",
+              tilePadding: 0),
         ),
         IconButtonWithAnimatedToolbar(
           // This is the widget we created

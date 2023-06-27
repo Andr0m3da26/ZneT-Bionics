@@ -1,12 +1,27 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+bool _isVideo(FileSystemEntity file) {
+  final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
+  final extension = path.extension(file.path).toLowerCase();
+  return videoExtensions.contains(extension);
+}
+
+bool _isTextFile(FileSystemEntity file) {
+  final textExtensions = ['.txt'];
+  final extension = path.extension(file.path).toLowerCase();
+  return textExtensions.contains(extension);
+}
+
 class FileExplorer extends StatelessWidget {
   final String directoryPath;
+  final int tilePadding;
 
-  const FileExplorer({super.key, required this.directoryPath});
+  const FileExplorer(
+      {super.key, required this.directoryPath, required this.tilePadding});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +33,6 @@ class FileExplorer extends StatelessWidget {
       itemCount: files.length,
       itemBuilder: (BuildContext context, int index) {
         final file = files[index];
-        final fileName = path.basename(file.path);
         if (file is Directory) {
           return ExpansionTile(
             title: Folder(file: file),
@@ -27,17 +41,38 @@ class FileExplorer extends StatelessWidget {
             onExpansionChanged: (isExpanded) {
               if (isExpanded) {}
             },
+            tilePadding: EdgeInsets.only(left: tilePadding.toDouble()),
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: FileExplorer(directoryPath: file.path),
-              )
+              FileExplorer(
+                  directoryPath: file.path, tilePadding: tilePadding + 20),
             ],
           );
         } else {
           return ListTile(
-            title: Text(fileName),
-            leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
+            title: Row(
+              children: [
+                // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
+                SizedBox(width: 57),
+                if (_isVideo(file)) ...[
+                  Icon(Icons.video_library)
+                ] else if (_isTextFile(file)) ...[
+                  Icon(Icons.description)
+                ] else ...[
+                  Icon(Icons.file_copy)
+                ],
+
+                SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    path.basename(file.path),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              debugPrint(file.path);
+            },
           );
         }
       },
@@ -57,7 +92,7 @@ class Folder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(file is Directory ? Icons.folder : Icons.file_copy),
+        Icon(Icons.folder),
         SizedBox(width: 10),
         Flexible(
           child: Text(
