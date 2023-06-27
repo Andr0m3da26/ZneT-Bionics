@@ -28,54 +28,57 @@ class FileExplorer extends StatelessWidget {
     final directory = Directory(directoryPath);
     final files = directory.listSync();
 
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: files.length,
-      itemBuilder: (BuildContext context, int index) {
-        final file = files[index];
-        if (file is Directory) {
-          return ExpansionTile(
-            title: Folder(file: file),
-            // leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
-            controlAffinity: ListTileControlAffinity.leading,
-            onExpansionChanged: (isExpanded) {
-              if (isExpanded) {}
-            },
-            tilePadding: EdgeInsets.only(left: tilePadding.toDouble()),
-            children: [
-              FileExplorer(
-                  directoryPath: file.path, tilePadding: tilePadding + 20),
-            ],
-          );
-        } else {
-          return ListTile(
-            title: Row(
+    return SizedBox(
+      width: 300,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: files.length,
+        itemBuilder: (BuildContext context, int index) {
+          final file = files[index];
+          if (file is Directory) {
+            return ExpansionTile(
+              title: Folder(file: file),
+              // leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
+              controlAffinity: ListTileControlAffinity.leading,
+              onExpansionChanged: (isExpanded) {
+                if (isExpanded) {}
+              },
+              tilePadding: EdgeInsets.only(left: tilePadding.toDouble()),
               children: [
-                // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
-                SizedBox(width: 57),
-                if (_isVideo(file)) ...[
-                  Icon(Icons.video_library)
-                ] else if (_isTextFile(file)) ...[
-                  Icon(Icons.description)
-                ] else ...[
-                  Icon(Icons.file_copy)
-                ],
-
-                SizedBox(width: 10),
-                Flexible(
-                  child: Text(
-                    path.basename(file.path),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                FileExplorer(
+                    directoryPath: file.path, tilePadding: tilePadding + 20),
               ],
-            ),
-            onTap: () {
-              debugPrint(file.path);
-            },
-          );
-        }
-      },
+            );
+          } else {
+            return ListTile(
+              title: Row(
+                children: [
+                  // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
+                  SizedBox(width: 57),
+                  if (_isVideo(file)) ...[
+                    Icon(Icons.video_library)
+                  ] else if (_isTextFile(file)) ...[
+                    Icon(Icons.description)
+                  ] else ...[
+                    Icon(Icons.file_copy)
+                  ],
+
+                  SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      path.basename(file.path),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                debugPrint(file.path);
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }

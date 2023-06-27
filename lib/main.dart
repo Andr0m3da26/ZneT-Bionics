@@ -31,12 +31,14 @@ class MyApp extends ConsumerWidget {
         home: Scaffold(
       body: Column(children: [
         NavbarContainer(),
-        IndexedStack(
-          index: _selectedIndex,
-          children: const [
-            AnalysisScreen(),
-            GraphRackScreen(),
-          ],
+        Expanded(
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: const [
+              AnalysisScreen(),
+              GraphRackScreen(),
+            ],
+          ),
         ),
       ]),
     ));
