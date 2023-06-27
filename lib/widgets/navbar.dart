@@ -4,6 +4,8 @@ import 'package:providerarchitecturetest/utilities/providers.dart';
 
 enum FileOptions { openProject, newProject }
 
+enum SettingsOptions { preferences, help, exit }
+
 class NavbarContainer extends ConsumerWidget {
   FileOptions? selectedMenu;
   @override
@@ -17,128 +19,90 @@ class NavbarContainer extends ConsumerWidget {
         ]),
         child: Row(
           children: [
-            NavbarButton(
-              tooltip: "File menu",
-              icon: Icons.insert_drive_file,
-              onSelected: (dynamic item) {
-                debugPrint("File menu selected");
-              },
-              onOpened: () => debugPrint("File menu opened"),
-              menuItems: <PopupMenuEntry<dynamic>>[
-                PopupMenuItem<dynamic>(
-                  value: FileOptions.newProject,
-                  child: Text('New Project'),
-                  onTap: () async {
-                    // Add your code here
-                  },
-                ),
-                PopupMenuItem<dynamic>(
-                  value: FileOptions.openProject,
-                  child: Text('Open Project'),
-                  onTap: () async {
-                    // Add your code here
-                  },
-                ),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  NavbarButton(
+                    tooltip: "File menu",
+                    icon: Icons.insert_drive_file,
+                    onSelected: (dynamic item) {
+                      debugPrint("File menu selected");
+                    },
+                    onOpened: () => debugPrint("File menu opened"),
+                    menuItems: <PopupMenuEntry<dynamic>>[
+                      PopupMenuItem<dynamic>(
+                        value: FileOptions.newProject,
+                        child: Text('New Project'),
+                        onTap: () async {
+                          // Add your code here
+                        },
+                      ),
+                      PopupMenuItem<dynamic>(
+                        value: FileOptions.openProject,
+                        child: Text('Open Project'),
+                        onTap: () async {
+                          // Add your code here
+                        },
+                      ),
+                    ],
+                  ),
+                  NavbarToggleButton(
+                    icon1: Icons.show_chart,
+                    icon2: Icons.videocam,
+                    onIcon1pressed: () {
+                      ref.watch(screenIndexProvider.notifier).changeScreen(1);
+                    },
+                    onIcon2pressed: () {
+                      ref.watch(screenIndexProvider.notifier).changeScreen(0);
+                    },
+                  ),
+                ],
+              ),
             ),
-            // Consumer<DataModel>(
-            //   builder: (context, datamodel, child) {
-            //     if (datamodel.activeScreen == ScreenType.videoStream) {
-            //       return NavbarButton(
-            //         tooltip: "Switch to graphrack",
-            //         icon: Icons.show_chart,
-            //         onSelected: (dynamic item) =>
-            //             debugPrint("Graphrack menu selected"),
-            //         onOpened: () {
-            //           debugPrint("Switching to graphrack");
-            //           DataModel myDataModel =
-            //               Provider.of<DataModel>(context, listen: false);
-            //           myDataModel.activeScreen = ScreenType.graphRack;
-            //         },
-            //       );
-            //     } else if (datamodel.activeScreen == ScreenType.graphRack) {
-            //       return NavbarButton(
-            //         tooltip: "Switch to videostream",
-            //         icon: Icons.videocam,
-            //         onOpened: () {
-            //           debugPrint("Switching to videostream");
-            //           DataModel myDataModel =
-            //               Provider.of<DataModel>(context, listen: false);
-            //           myDataModel.activeScreen = ScreenType.videoStream;
-            //         },
-            //       );
-            //     } else {
-            //       //Should never happen
-            //       return Container();
-            //     }
-            //   },
-            // ),
-            NavbarToggleButton(
-              icon1: Icons.show_chart,
-              icon2: Icons.videocam,
-              onIcon1pressed: () {
-                ref.watch(screenIndexProvider.notifier).changeScreen(1);
-              },
-              onIcon2pressed: () {
-                ref.watch(screenIndexProvider.notifier).changeScreen(0);
-              },
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  NavbarButton(
+                    tooltip: "Settings",
+                    icon: Icons.settings,
+                    onSelected: (dynamic item) {
+                      debugPrint("Settings menu selected");
+                    },
+                    onOpened: () => debugPrint("Settings menu opened"),
+                    menuItems: <PopupMenuEntry<dynamic>>[
+                      PopupMenuItem<dynamic>(
+                        value: SettingsOptions.preferences,
+                        child: Text('Preferences'),
+                        onTap: () async {
+                          // Add your code here
+                        },
+                      ),
+                      PopupMenuItem<dynamic>(
+                        value: SettingsOptions.help,
+                        child: Text('Help'),
+                        onTap: () async {
+                          // Add your code here
+                        },
+                      ),
+                      PopupMenuItem<dynamic>(
+                        value: SettingsOptions.exit,
+                        child: Text('Exit'),
+                        onTap: () async {
+                          // Add your code here
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  // Material fileOptionsButton() {
-  //   return Material(
-  //     child: PopupMenuButton<FileOptions>(
-  //       tooltip: "File menu",
-  //       child: SizedBox.square(
-  //           dimension: 100,
-  //           child: InkWell(
-  //               hoverColor: Colors.grey, child: Icon(Icons.insert_drive_file))),
-
-  //       // Callback that sets the selected popup menu item.
-  //       onSelected: (FileOptions item) {
-  //         setState(() {
-  //           selectedMenu = item;
-  //         });
-  //       },
-  //       itemBuilder: (BuildContext context) => <PopupMenuEntry<FileOptions>>[
-  //         PopupMenuItem<FileOptions>(
-  //           value: FileOptions.newProject,
-  //           child: Text('New Project'),
-  //           onTap: () async {
-  //             // String? result = await FilePicker.platform.getDirectoryPath();
-
-  //             // if (result != null) {
-  //             //   // Do something with result
-  //             //   debugPrint(result);
-  //             // } else {
-  //             //   // User canceled the picker
-  //             //   debugPrint("User cancelled new project");
-  //             // }
-  //           },
-  //         ),
-  //         PopupMenuItem<FileOptions>(
-  //           value: FileOptions.openProject,
-  //           child: Text('Open Project'),
-  //           onTap: () async {
-  //             // String? result = await FilePicker.platform.getDirectoryPath();
-
-  //             // if (result != null) {
-  //             //   // Do something with result
-  //             //   debugPrint(result);
-  //             // } else {
-  //             //   // User canceled the picker
-  //             //   debugPrint("User cancelled open project");
-  //             // }
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
 
 class NavbarButton extends StatelessWidget {
