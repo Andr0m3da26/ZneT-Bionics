@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:providerarchitecturetest/widgets/contextmenu.dart';
 
 bool _isVideo(FileSystemEntity file) {
   final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
@@ -37,8 +38,11 @@ class FileExplorer extends StatelessWidget {
           final file = files[index];
           if (file is Directory) {
             return ExpansionTile(
+              collapsedBackgroundColor: Colors.white,
+              backgroundColor: Colors.white,
               title: Folder(file: file),
               // leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
+
               controlAffinity: ListTileControlAffinity.leading,
               onExpansionChanged: (isExpanded) {
                 if (isExpanded) {}
@@ -48,9 +52,13 @@ class FileExplorer extends StatelessWidget {
                 FileExplorer(
                     directoryPath: file.path, tilePadding: tilePadding + 20),
               ],
+              trailing: ContextMenu(
+                items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+              ),
             );
           } else {
             return ListTile(
+              tileColor: Colors.white,
               title: Row(
                 children: [
                   // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
@@ -75,6 +83,9 @@ class FileExplorer extends StatelessWidget {
               onTap: () {
                 debugPrint(file.path);
               },
+              trailing: ContextMenu(
+                items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+              ),
             );
           }
         },

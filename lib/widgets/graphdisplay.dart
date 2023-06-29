@@ -17,7 +17,8 @@ class GraphDisplayState extends ConsumerState<GraphDisplay> {
   @override
   Widget build(BuildContext context) {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
-    if (isCameraToggle) {
+    final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
+    if (isCameraToggle && isVirtualCanvasToggle) {
       final videoStream = ref.watch(videoStreamProvider);
       videoStream.whenData((data) {
         debugPrint(data['keypoints'].toString());

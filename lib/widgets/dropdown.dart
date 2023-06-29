@@ -29,7 +29,6 @@ class _IconButtonWithAnimatedToolbarState
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: AlignmentDirectional.topCenter,
       children: [
         Positioned(
           top: 25,

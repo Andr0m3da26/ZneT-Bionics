@@ -9,21 +9,30 @@ class VideoStream extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
-    if (isCameraToggle) {
+    final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
+    if (isCameraToggle && isVirtualCanvasToggle) {
       final videoStream = ref.watch(videoStreamProvider);
       return videoStream.when(
         data: (data) {
-          return Image.memory(
-            data['image'],
-            gaplessPlayback: true,
-            excludeFromSemantics: true,
+          return Expanded(
+            child: Image.memory(
+              data['image'],
+              gaplessPlayback: true,
+              excludeFromSemantics: true,
+            ),
           );
         },
         loading: () => const CircularProgressIndicator(),
         error: (err, stack) => Text('Error: $err'),
       );
-    } else {
-      return Text("Start video stream");
     }
+
+    if (isCameraToggle && !isVirtualCanvasToggle) {}
+    if (isVirtualCanvasToggle && !isCameraToggle) {}
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(color: Colors.grey[600]),
+      ),
+    );
   }
 }

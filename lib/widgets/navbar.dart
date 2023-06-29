@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
@@ -8,6 +10,8 @@ enum SettingsOptions { preferences, help, exit }
 
 class NavbarContainer extends ConsumerWidget {
   FileOptions? selectedMenu;
+
+  NavbarContainer({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
@@ -91,6 +95,7 @@ class NavbarContainer extends ConsumerWidget {
                         child: Text('Exit'),
                         onTap: () async {
                           // Add your code here
+                          exit(0);
                         },
                       ),
                     ],
