@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:providerarchitecturetest/widgets/contextmenu.dart';
 
 bool _isVideo(FileSystemEntity file) {
@@ -17,7 +18,7 @@ bool _isTextFile(FileSystemEntity file) {
   return textExtensions.contains(extension);
 }
 
-class FileExplorer extends StatelessWidget {
+class FileExplorer extends ConsumerWidget {
   final String directoryPath;
   final int tilePadding;
 
@@ -25,7 +26,7 @@ class FileExplorer extends StatelessWidget {
       {super.key, required this.directoryPath, required this.tilePadding});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final directory = Directory(directoryPath);
     final files = directory.listSync();
 
@@ -81,7 +82,7 @@ class FileExplorer extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                debugPrint(file.path);
+                ref.watch(fileSelectedProvider.notifier).selectFile(file.path);
               },
               trailing: ContextMenu(
                 items: ["Cut", "Copy", "Paste", "Rename", "Delete"],

@@ -11,7 +11,7 @@ class VideoStream extends ConsumerWidget {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
     if (isCameraToggle && isVirtualCanvasToggle) {
-      final videoStream = ref.watch(videoStreamProvider);
+      final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
           return Expanded(
@@ -28,7 +28,16 @@ class VideoStream extends ConsumerWidget {
     }
 
     if (isCameraToggle && !isVirtualCanvasToggle) {}
-    if (isVirtualCanvasToggle && !isCameraToggle) {}
+    if (isVirtualCanvasToggle && !isCameraToggle) {
+      final virtualCanvas = ref.watch(virtualCanvasProvider);
+      return virtualCanvas.when(
+        data: (data) {
+          return Expanded(child: Container(child: Text("success")));
+        },
+        loading: () => const CircularProgressIndicator(),
+        error: (err, stack) => Text('Error: $err'),
+      );
+    }
     return Expanded(
       child: Container(
         decoration: BoxDecoration(color: Colors.grey[600]),

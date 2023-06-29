@@ -48,7 +48,7 @@ class AnalysisScreen extends ConsumerWidget {
                 children: [
                   FileExplorer(
                       directoryPath:
-                          r"C:\Users\kiera\OneDrive\Documents\Projects",
+                          r"C:\Users\kiera\OneDrive\Documents\Projects\websocketsxfluttertest",
                       tilePadding: 0),
                   VideoStream(),
                 ],

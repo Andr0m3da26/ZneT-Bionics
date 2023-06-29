@@ -1,7 +1,7 @@
 import "dart:convert";
 import "dart:async";
 import "dart:typed_data";
-
+import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:web_socket_channel/io.dart";
 import "package:web_socket_channel/web_socket_channel.dart";
@@ -56,7 +56,7 @@ class IsVirtualCanvasToggle extends Notifier<bool> {
 final videoStreamProvider = StreamProvider.autoDispose<Map>((ref) async* {
   final channel = IOWebSocketChannel.connect("ws://localhost:5000");
   ref.onDispose(() => channel.sink.close());
-  channel.sink.add('{"command": "stream", "virtualcanvas": false"}');
+  channel.sink.add('{"command": "stream", "virtualcanvas": false}');
   await for (final json in channel.stream) {
     // A new message has been received. Let"s add it to the list of all messages.
     // allMessages = [...allMessages, message];
@@ -66,18 +66,28 @@ final videoStreamProvider = StreamProvider.autoDispose<Map>((ref) async* {
   }
 });
 
-final videoProvider = FutureProvider.autoDispose<Map>((ref) async {
+final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
   final channel = IOWebSocketChannel.connect("ws://localhost:5000");
   ref.onDispose(() => channel.sink.close());
-  void sendVideo(String path) async {
-    channel.sink.add('{"command": "video", "path": "$path"}');
-    final success = await channel.stream.first;
-  }
+  channel.sink.add(jsonEncode(
+      {"command": "video", "path": ref.watch(fileSelectedProvider)}));
 
-  final json = await channel.stream.first;
-  final Map data = jsonDecode(json);
-  data["image"] = Uint8List.fromList(base64Decode(data["image"]));
+  final Map data = jsonDecode(await channel.stream.first);
   return data;
+});
+
+final videoStreamAndVirtualCanvasProvider =
+    StreamProvider.autoDispose<Map>((ref) async* {
+  final channel = IOWebSocketChannel.connect("ws://localhost:5000");
+  ref.onDispose(() => channel.sink.close());
+  channel.sink.add('{"command": "stream", "virtualcanvas": true}');
+  await for (final json in channel.stream) {
+    // A new message has been received. Let"s add it to the list of all messages.
+    // allMessages = [...allMessages, message];
+    final Map data = jsonDecode(json);
+    data["image"] = Uint8List.fromList(base64Decode(data["image"]));
+    yield data;
+  }
 });
 
 final fileSelectedProvider = NotifierProvider<FileSelected, String>(() {
@@ -92,5 +102,6 @@ class FileSelected extends Notifier<String> {
 
   void selectFile(String path) {
     state = path;
+    debugPrint(state);
   }
 }

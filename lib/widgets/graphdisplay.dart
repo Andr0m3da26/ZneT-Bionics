@@ -19,27 +19,17 @@ class GraphDisplayState extends ConsumerState<GraphDisplay> {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
     if (isCameraToggle && isVirtualCanvasToggle) {
-      final videoStream = ref.watch(videoStreamProvider);
-      videoStream.whenData((data) {
+      final stream = ref.watch(videoStreamAndVirtualCanvasProvider);
+      stream.whenData((data) {
         debugPrint(data['keypoints'].toString());
         keypoints.add(data['keypoints']);
       });
-      // return AspectRatio(
-      //   aspectRatio: 2,
-      //   child: LineChart(
-      //     LineChartData(
-      //       lineBarsData: [
-      //         LineChartBarData(
-      //           spots: [],
-      //           isCurved: false,
-      //           // dotData: FlDotData(
-      //           //   show: false,
-      //           // ),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // );
+    }
+    if (!isCameraToggle && isVirtualCanvasToggle) {
+      final video = ref.watch(virtualCanvasProvider);
+      video.whenData((data) {
+        keypoints = data['keypoints'];
+      });
     }
     return AspectRatio(
       aspectRatio: 2,
@@ -47,21 +37,13 @@ class GraphDisplayState extends ConsumerState<GraphDisplay> {
         LineChartData(
           lineBarsData: [
             LineChartBarData(
-              spots:
-                  // keypoints.map((point) => FlSpot(point.x, point.y)).toList(),
-                  // keypoints.map((frame) => FlSpot(, frame[0][1])).toList(),
-                  // List graphData = List.from(keypoints),
-                  // keypoints.asMap().forEach((frame, index) => FlSpot(index, frame[0][1])),
-                  keypoints
-                      .asMap()
-                      .entries
-                      .map((entry) =>
-                          FlSpot(entry.key.toDouble(), entry.value[11][1]))
-                      .toList(),
+              spots: keypoints
+                  .asMap()
+                  .entries
+                  .map((entry) =>
+                      FlSpot(entry.key.toDouble(), entry.value[11][1]))
+                  .toList(),
               isCurved: false,
-              // dotData: FlDotData(
-              //   show: false,
-              // ),
             ),
           ],
         ),
