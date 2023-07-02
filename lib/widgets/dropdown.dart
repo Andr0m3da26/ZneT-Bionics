@@ -49,6 +49,12 @@ class _IconButtonWithAnimatedToolbarState
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: FloatingActionButton(
+                shape: ShapeBorder.lerp(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
+                    0.0),
                 onPressed: () {
                   setState(() {
                     _isToolbarExtended = !_isToolbarExtended;

@@ -9,12 +9,13 @@ class VideoStream extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
+
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
     if (isCameraToggle && isVirtualCanvasToggle) {
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
-          return Expanded(
+          return Positioned.fill(
             child: Image.memory(
               data['image'],
               gaplessPlayback: true,
@@ -22,7 +23,7 @@ class VideoStream extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const CircularProgressIndicator(),
+        loading: () => Center(child: const CircularProgressIndicator()),
         error: (err, stack) => Text('Error: $err'),
       );
     }
@@ -32,15 +33,29 @@ class VideoStream extends ConsumerWidget {
       final virtualCanvas = ref.watch(virtualCanvasProvider);
       return virtualCanvas.when(
         data: (data) {
-          return Expanded(child: Container(child: Text("success")));
+          return Container(child: Text("success"));
         },
-        loading: () => const CircularProgressIndicator(),
+        loading: () => Center(child: const CircularProgressIndicator()),
         error: (err, stack) => Text('Error: $err'),
       );
     }
-    return Expanded(
+    return Positioned.fill(
       child: Container(
-        decoration: BoxDecoration(color: Colors.grey[600]),
+        decoration: BoxDecoration(
+          color: Colors.grey,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Select a video to display, or turn on the camera",
+              style: TextStyle(
+                color: Colors.grey[300],
+                fontSize: 20.0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

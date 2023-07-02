@@ -28,19 +28,20 @@ class MyApp extends ConsumerWidget {
     final int _selectedIndex = ref.watch(screenIndexProvider);
 
     return MaterialApp(
+        theme: ThemeData(useMaterial3: true),
         home: Scaffold(
-      body: Column(children: [
-        NavbarContainer(),
-        Expanded(
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: const [
-              AnalysisScreen(),
-              GraphRackScreen(),
-            ],
-          ),
-        ),
-      ]),
-    ));
+          body: Column(children: [
+            NavbarContainer(),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: const [
+                  AnalysisScreen(),
+                  GraphRackScreen(),
+                ],
+              ),
+            ),
+          ]),
+        ));
   }
 }
