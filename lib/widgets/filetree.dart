@@ -83,6 +83,7 @@ class FileExplorer extends ConsumerWidget {
               ),
               onTap: () {
                 ref.watch(fileSelectedProvider.notifier).selectFile(file.path);
+                ref.watch(videoPlayerProvider.notifier).open(file.path);
               },
               trailing: ContextMenu(
                 items: ["Cut", "Copy", "Paste", "Rename", "Delete"],

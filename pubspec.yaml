@@ -8,11 +8,14 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
+  dart_vlc: ^0.4.0
   fl_chart: ^0.63.0
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.3.6
   web_socket_channel: ^2.4.0
+  window_manager: ^0.3.5
+  
 
 dev_dependencies:
   flutter_test:
