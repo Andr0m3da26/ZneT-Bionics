@@ -53,22 +53,9 @@ class IsVirtualCanvasToggle extends Notifier<bool> {
   }
 }
 
-final videoStreamProvider = StreamProvider.autoDispose<Map>((ref) async* {
-  final channel = IOWebSocketChannel.connect("ws://localhost:5000");
-  ref.onDispose(() => channel.sink.close());
-  channel.sink.add('{"command": "stream", "virtualcanvas": false}');
-  await for (final json in channel.stream) {
-    // A new message has been received. Let"s add it to the list of all messages.
-    // allMessages = [...allMessages, message];
-    final Map data = jsonDecode(json);
-    data["image"] = Uint8List.fromList(base64Decode(data["image"]));
-    yield data;
-  }
-});
-
 final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
   final channel = IOWebSocketChannel.connect("ws://localhost:5000");
-  ref.onDispose(() => channel.sink.close());
+  // ref.onDispose(() => channel.sink.close());
   channel.sink.add(jsonEncode(
       {"command": "video", "path": ref.watch(fileSelectedProvider)}));
 
@@ -76,16 +63,19 @@ final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
   return data;
 });
 
-final videoStreamAndVirtualCanvasProvider =
-    StreamProvider.autoDispose<Map>((ref) async* {
+final videoStreamAndVirtualCanvasProvider = StreamProvider<Map>((ref) async* {
   final channel = IOWebSocketChannel.connect("ws://localhost:5000");
-  ref.onDispose(() => channel.sink.close());
-  channel.sink.add('{"command": "stream", "virtualcanvas": true}');
+
+  ref.onDispose(() => channel.sink.add(jsonEncode({'isCameraToggle': false})));
+  debugPrint("sending message");
+  channel.sink.add(jsonEncode({'isCameraToggle': true}));
+  debugPrint("sent message");
   await for (final json in channel.stream) {
     // A new message has been received. Let"s add it to the list of all messages.
     // allMessages = [...allMessages, message];
     final Map data = jsonDecode(json);
-    data["image"] = Uint8List.fromList(base64Decode(data["image"]));
+    data["camdata"] = Uint8List.fromList(base64Decode(data["camdata"]));
+    data["vcdata"] = Uint8List.fromList(base64Decode(data["vcdata"]));
     yield data;
   }
 });

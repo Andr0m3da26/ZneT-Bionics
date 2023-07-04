@@ -15,8 +15,38 @@ class VideoStream extends ConsumerWidget {
       return videoStream.when(
         data: (data) {
           return Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Image.memory(
+                    data['camdata'],
+                    gaplessPlayback: true,
+                    excludeFromSemantics: true,
+                  ),
+                ),
+                Expanded(
+                  child: Image.memory(
+                    data['vcdata'],
+                    gaplessPlayback: true,
+                    excludeFromSemantics: true,
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+        loading: () => const CircularProgressIndicator(),
+        error: (err, stack) => Text('Error: $err'),
+      );
+    }
+
+    if (isCameraToggle && !isVirtualCanvasToggle) {
+      final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
+      return videoStream.when(
+        data: (data) {
+          return Expanded(
             child: Image.memory(
-              data['image'],
+              data['camdata'],
               gaplessPlayback: true,
               excludeFromSemantics: true,
             ),
@@ -26,17 +56,15 @@ class VideoStream extends ConsumerWidget {
         error: (err, stack) => Text('Error: $err'),
       );
     }
-
-    if (isCameraToggle && !isVirtualCanvasToggle) {}
     if (isVirtualCanvasToggle && !isCameraToggle) {
-      final virtualCanvas = ref.watch(virtualCanvasProvider);
-      return virtualCanvas.when(
-        data: (data) {
-          return Expanded(child: Container(child: Text("success")));
-        },
-        loading: () => const CircularProgressIndicator(),
-        error: (err, stack) => Text('Error: $err'),
-      );
+      // final virtualCanvas = ref.watch(virtualCanvasProvider);
+      // return virtualCanvas.when(
+      //   data: (data) {
+      //     return Expanded(child: Container(child: Text("success")));
+      //   },
+      //   loading: () => const CircularProgressIndicator(),
+      //   error: (err, stack) => Text('Error: $err'),
+      // );
     }
     return Expanded(
       child: Container(
