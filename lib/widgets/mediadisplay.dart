@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:providerarchitecturetest/widgets/streamdisplay.dart';
 
 class VideoStream extends ConsumerWidget {
   @override
@@ -11,44 +12,16 @@ class VideoStream extends ConsumerWidget {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
     final channel = ref.watch(websocketProvider);
-    // final channelNotifier = ref.watch(websocketProvider.notifier);
-    // channelNotifier.send(
-    //       jsonEncode({"isCameraToggle": isCameraToggle, "isVirtualCanvasToggle": isVirtualCanvasToggle}));
+    final channelNotifier = ref.watch(websocketProvider.notifier);
+    channelNotifier.send(jsonEncode({
+      "isCameraToggle": isCameraToggle,
+      "isVirtualCanvasToggle": isVirtualCanvasToggle
+    }));
     if (isCameraToggle) {
-      final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
-      return videoStream.when(
-        data: (data) {
-          return Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Image.memory(
-                    data['camdata'],
-                    gaplessPlayback: true,
-                    excludeFromSemantics: true,
-                  ),
-                ),
-                isVirtualCanvasToggle
-                    ? Expanded(
-                        child: Image.memory(
-                          data['vcdata'],
-                          gaplessPlayback: true,
-                          excludeFromSemantics: true,
-                        ),
-                      )
-                    : Container()
-              ],
-            ),
-          );
-        },
-        loading: () => const CircularProgressIndicator(),
-        error: (err, stack) => Text('Error: $err'),
-      );
+      StreamDisplay();
     }
 
     // if (isCameraToggle && !isVirtualCanvasToggle) {
-    //   channelNotifier.send(
-    //       jsonEncode({"isCameraToggle": true, "isVirtualCanvasToggle": false}));
     //   final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
     //   return videoStream.when(
     //     data: (data) {

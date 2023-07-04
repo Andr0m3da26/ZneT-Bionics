@@ -80,11 +80,11 @@ final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
 
 final videoStreamAndVirtualCanvasProvider = StreamProvider<Map>((ref) async* {
   final channel = ref.watch(websocketProvider);
-  final channelNotifier = ref.watch(websocketProvider.notifier);
+  // final channelNotifier = ref.watch(websocketProvider.notifier);
 
-  debugPrint("sending message");
-  channelNotifier.send(jsonEncode({'isCameraToggle': true}));
-  debugPrint("sent message");
+  // debugPrint("sending message");
+  // channelNotifier.send(jsonEncode({'isCameraToggle': true}));
+  // debugPrint("sent message");
 
   await for (final json in channel.stream) {
     // A new message has been received. Let"s add it to the list of all messages.

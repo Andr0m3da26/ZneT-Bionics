@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,6 +41,11 @@ class AnalysisScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final channelNotifier = ref.watch(websocketProvider.notifier);
+    channelNotifier.send(jsonEncode({
+      "isCameraToggle": ref.watch(cameraToggleProvider),
+      "isVirtualCanvasToggle": ref.watch(virtualCanvasToggleProvider)
+    }));
     return Column(
       children: [
         Expanded(
