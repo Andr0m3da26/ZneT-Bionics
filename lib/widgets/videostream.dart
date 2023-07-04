@@ -10,7 +10,11 @@ class VideoStream extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
+    final channel = ref.watch(websocketProvider);
+    final channelNotifier = ref.watch(websocketProvider.notifier);
     if (isCameraToggle && isVirtualCanvasToggle) {
+      channelNotifier.send(
+          jsonEncode({"isCameraToggle": true, "isVirtualCanvasToggle": true}));
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
@@ -41,6 +45,8 @@ class VideoStream extends ConsumerWidget {
     }
 
     if (isCameraToggle && !isVirtualCanvasToggle) {
+      channelNotifier.send(
+          jsonEncode({"isCameraToggle": true, "isVirtualCanvasToggle": false}));
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
@@ -66,6 +72,8 @@ class VideoStream extends ConsumerWidget {
       //   error: (err, stack) => Text('Error: $err'),
       // );
     }
+    channelNotifier.send(
+        jsonEncode({"isCameraToggle": false, "isVirtualCanvasToggle": false}));
     return Expanded(
       child: Container(
         decoration: BoxDecoration(color: Colors.grey[600]),

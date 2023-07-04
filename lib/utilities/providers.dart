@@ -53,6 +53,21 @@ class IsVirtualCanvasToggle extends Notifier<bool> {
   }
 }
 
+final websocketProvider = NotifierProvider<Channel, WebSocketChannel>(() {
+  return Channel();
+});
+
+class Channel extends Notifier<WebSocketChannel> {
+  @override
+  WebSocketChannel build() {
+    return IOWebSocketChannel.connect("ws://localhost:5000");
+  }
+
+  void send(String message) {
+    state.sink.add(message);
+  }
+}
+
 final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
   final channel = IOWebSocketChannel.connect("ws://localhost:5000");
   // ref.onDispose(() => channel.sink.close());
@@ -64,12 +79,13 @@ final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
 });
 
 final videoStreamAndVirtualCanvasProvider = StreamProvider<Map>((ref) async* {
-  final channel = IOWebSocketChannel.connect("ws://localhost:5000");
+  final channel = ref.watch(websocketProvider);
+  final channelNotifier = ref.watch(websocketProvider.notifier);
 
-  ref.onDispose(() => channel.sink.add(jsonEncode({'isCameraToggle': false})));
   debugPrint("sending message");
-  channel.sink.add(jsonEncode({'isCameraToggle': true}));
+  channelNotifier.send(jsonEncode({'isCameraToggle': true}));
   debugPrint("sent message");
+
   await for (final json in channel.stream) {
     // A new message has been received. Let"s add it to the list of all messages.
     // allMessages = [...allMessages, message];
