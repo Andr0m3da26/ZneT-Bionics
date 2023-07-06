@@ -65,14 +65,19 @@ class VideoStream extends ConsumerWidget {
     //   );
     // }
     if (isVirtualCanvasToggle && !isCameraToggle) {
-      // final virtualCanvas = ref.watch(virtualCanvasProvider);
-      // return virtualCanvas.when(
-      //   data: (data) {
-      //     return Expanded(child: Container(child: Text("success")));
-      //   },
-      //   loading: () => const CircularProgressIndicator(),
-      //   error: (err, stack) => Text('Error: $err'),
-      // );
+      final virtualCanvas = ref.watch(virtualCanvasProvider);
+      final fileSelected = ref.watch(fileSelectedProvider);
+      return virtualCanvas.when(
+          data: (data) {
+            return Expanded(
+                child: Container(child: Text("success: $fileSelected")));
+          },
+          loading: () => const CircularProgressIndicator(),
+          error: (err, stack) {
+            debugPrint(stack.toString());
+            return Text('Error: $err');
+          },
+          skipLoadingOnRefresh: false);
     }
 
     return Expanded(

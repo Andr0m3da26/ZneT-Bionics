@@ -42,9 +42,11 @@ class AnalysisScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final channelNotifier = ref.watch(websocketProvider.notifier);
+    debugPrint("Sending data to websocket");
     channelNotifier.send(jsonEncode({
       "isCameraToggle": ref.watch(cameraToggleProvider),
-      "isVirtualCanvasToggle": ref.watch(virtualCanvasToggleProvider)
+      "isVirtualCanvasToggle": ref.watch(virtualCanvasToggleProvider),
+      "fileSelectedPath": ref.watch(fileSelectedProvider)
     }));
     return Column(
       children: [

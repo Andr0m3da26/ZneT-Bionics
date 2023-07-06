@@ -53,6 +53,11 @@ class IsVirtualCanvasToggle extends Notifier<bool> {
   }
 }
 
+final websocketStreamProvider = Provider((ref) {
+  final channel = ref.watch(websocketProvider);
+  return channel.stream.asBroadcastStream();
+});
+
 final websocketProvider = NotifierProvider<Channel, WebSocketChannel>(() {
   return Channel();
 });
@@ -69,24 +74,27 @@ class Channel extends Notifier<WebSocketChannel> {
 }
 
 final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
-  final channel = IOWebSocketChannel.connect("ws://localhost:5000");
+  // final channel = ref.watch(websocketProvider);
+  final stream = ref.watch(websocketStreamProvider);
   // ref.onDispose(() => channel.sink.close());
-  channel.sink.add(jsonEncode(
-      {"command": "video", "path": ref.watch(fileSelectedProvider)}));
+  // channel.sink.add(jsonEncode(
+  //     {"command": "video", "path": ref.watch(fileSelectedProvider)}));
 
-  final Map data = jsonDecode(await channel.stream.first);
+  final Map data = jsonDecode(await stream.first);
   return data;
 });
 
-final videoStreamAndVirtualCanvasProvider = StreamProvider<Map>((ref) async* {
-  final channel = ref.watch(websocketProvider);
+final videoStreamAndVirtualCanvasProvider =
+    StreamProvider.autoDispose<Map>((ref) async* {
+  // final channel = ref.watch(websocketProvider);
+  final stream = ref.watch(websocketStreamProvider);
   // final channelNotifier = ref.watch(websocketProvider.notifier);
 
   // debugPrint("sending message");
   // channelNotifier.send(jsonEncode({'isCameraToggle': true}));
   // debugPrint("sent message");
 
-  await for (final json in channel.stream) {
+  await for (final json in stream) {
     // A new message has been received. Let"s add it to the list of all messages.
     // allMessages = [...allMessages, message];
     final Map data = jsonDecode(json);
