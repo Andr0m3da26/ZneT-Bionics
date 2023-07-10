@@ -42,6 +42,7 @@ class AnalysisScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final channelNotifier = ref.watch(websocketProvider.notifier);
+    final projectPath = ref.watch(projectPathProvider);
     debugPrint("Sending data to websocket");
     channelNotifier.send(jsonEncode({
       "isCameraToggle": ref.watch(cameraToggleProvider),
@@ -56,9 +57,7 @@ class AnalysisScreen extends ConsumerWidget {
               Row(
                 children: [
                   FileExplorer(
-                      directoryPath:
-                          r"C:\Users\kiera\OneDrive\Documents\Projects\websocketsxfluttertest",
-                      tilePadding: 0),
+                      directoryPath: projectPath?.path, tilePadding: 0),
                   VideoStream(),
                 ],
               ),

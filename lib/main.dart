@@ -4,6 +4,7 @@ import 'package:providerarchitecturetest/screens/graphrackscreen.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/widgets/navbar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // We create a "provider", which will store a value (here "Hello world").
 // By using a provider, this allows us to mock/override the value exposed.
@@ -28,19 +29,23 @@ class MyApp extends ConsumerWidget {
     final int _selectedIndex = ref.watch(screenIndexProvider);
 
     return MaterialApp(
+        theme: ThemeData(
+            useMaterial3: true,
+            textTheme:
+                GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)),
         home: Scaffold(
-      body: Column(children: [
-        NavbarContainer(),
-        Expanded(
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: const [
-              AnalysisScreen(),
-              GraphRackScreen(),
-            ],
-          ),
-        ),
-      ]),
-    ));
+          body: Column(children: [
+            NavbarContainer(),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: const [
+                  AnalysisScreen(),
+                  GraphRackScreen(),
+                ],
+              ),
+            ),
+          ]),
+        ));
   }
 }

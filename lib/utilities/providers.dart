@@ -1,11 +1,15 @@
 import "dart:convert";
 import "dart:async";
+import "dart:io";
 import "dart:typed_data";
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:web_socket_channel/io.dart";
 import "package:web_socket_channel/web_socket_channel.dart";
 import "package:web_socket_channel/status.dart" as status;
+import 'package:uuid/uuid.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:providerarchitecturetest/widgets/newproject.dart';
 
 final screenIndexProvider = NotifierProvider<ScreenIndex, int>(() {
   return ScreenIndex();
@@ -76,11 +80,16 @@ class Channel extends Notifier<WebSocketChannel> {
 final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
   // final channel = ref.watch(websocketProvider);
   final stream = ref.watch(websocketStreamProvider);
+  final graphsListNotifier = ref.watch(graphsProvider.notifier);
   // ref.onDispose(() => channel.sink.close());
   // channel.sink.add(jsonEncode(
   //     {"command": "video", "path": ref.watch(fileSelectedProvider)}));
 
   final Map data = jsonDecode(await stream.first);
+  graphsListNotifier.addGraph(Graph(
+      id: const Uuid().v1(),
+      keypoints: data['keypoints'],
+      date: DateTime.now()));
   return data;
 });
 
@@ -117,5 +126,132 @@ class FileSelected extends Notifier<String> {
   void selectFile(String path) {
     state = path;
     debugPrint(state);
+  }
+}
+
+final projectPathProvider = NotifierProvider<ProjectPath, Directory?>(() {
+  return ProjectPath();
+});
+
+class ProjectPath extends Notifier<Directory?> {
+  @override
+  Directory? build() {
+    return null;
+  }
+
+  void selectDirectory(String path) {
+    state = Directory(path);
+    debugPrint(state!.path);
+  }
+}
+
+class Graph {
+  Graph(
+      {required this.id,
+      this.keypoints = const [],
+      this.title = "Untitled Graph",
+      required this.date});
+  final String id;
+  List? keypoints;
+  String? title;
+  final DateTime date;
+}
+
+final graphsProvider = NotifierProvider<GraphsList, List<Graph>>(() {
+  return GraphsList();
+});
+
+class GraphsList extends Notifier<List<Graph>> {
+  @override
+  List<Graph> build() {
+    return [];
+  }
+
+  void addGraph(Graph graph) {
+    state = [...state, graph];
+  }
+
+  void removeGraph(Graph graph) {
+    state = state.where((element) => element != graph).toList();
+  }
+}
+
+final graphSelectedProvider = NotifierProvider<GraphSelected, Graph?>(() {
+  return GraphSelected();
+});
+
+class GraphSelected extends Notifier<Graph?> {
+  @override
+  Graph? build() {
+    return null;
+  }
+
+  void selectGraph(String id) {
+    ref.watch(graphsProvider).forEach((graph) {
+      if (graph.id == id) {
+        state = graph;
+      }
+    });
+  }
+}
+
+enum FileOptions { openProject, newProject }
+
+enum SettingsOptions { preferences, help, exit }
+
+final fileOptionsHandler = NotifierProvider<FileOptionsHandler, bool>(() {
+  return FileOptionsHandler();
+});
+
+class FileOptionsHandler extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void handleSelection(item, BuildContext context) {
+    switch (item) {
+      case FileOptions.newProject:
+        debugPrint("new project");
+        newProject(context);
+        break;
+      case FileOptions.openProject:
+        debugPrint("open project");
+        openProject();
+        break;
+      default:
+        debugPrint("invalid item");
+        break;
+    }
+  }
+
+  void newProject(BuildContext context) async {
+    String? strFolderDir = await getDirectoryPath();
+    if (strFolderDir == null) {
+      return;
+    }
+    Directory folderDir = Directory(strFolderDir);
+    debugPrint(folderDir.path);
+
+    String? projectName = await dialogBuilder(context, strFolderDir);
+    if (projectName == null) {
+      return;
+    }
+    // create a new folder in the directory
+    Directory('$strFolderDir\\$projectName\\Videos')
+        .createSync(recursive: true);
+    Directory('$strFolderDir\\$projectName\\Data').createSync(recursive: true);
+    ref
+        .watch(projectPathProvider.notifier)
+        .selectDirectory('$strFolderDir\\$projectName');
+  }
+
+  void openProject() async {
+    // debugPrint("open project");
+    String? strFolderDir = await getDirectoryPath();
+    if (strFolderDir == null) {
+      return;
+    }
+    ref.watch(projectPathProvider.notifier).selectDirectory(strFolderDir);
   }
 }

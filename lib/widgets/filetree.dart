@@ -19,7 +19,7 @@ bool _isTextFile(FileSystemEntity file) {
 }
 
 class FileExplorer extends ConsumerWidget {
-  final String directoryPath;
+  final String? directoryPath;
   final int tilePadding;
 
   const FileExplorer(
@@ -27,71 +27,85 @@ class FileExplorer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final directory = Directory(directoryPath);
-    final files = directory.listSync();
+    // final projectPath = ref.watch(projectPathProvider);
 
-    return SizedBox(
-      width: 300,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: files.length,
-        itemBuilder: (BuildContext context, int index) {
-          final file = files[index];
-          if (file is Directory) {
-            return ExpansionTile(
-              collapsedBackgroundColor: Colors.white,
-              backgroundColor: Colors.white,
-              title: Folder(file: file),
-              // leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
+    if (directoryPath == null) {
+      return SizedBox(
+        width: 300,
+        child: Center(
+          child: Text("Open a project"),
+        ),
+      );
+    } else {
+      final directory = Directory(directoryPath!);
+      final files = directory.listSync();
+      // final files = projectPath.listSync();
+      return Container(
+        width: 300,
+        alignment: AlignmentDirectional.topStart,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: files.length,
+          itemBuilder: (BuildContext context, int index) {
+            final file = files[index];
+            if (file is Directory) {
+              return ExpansionTile(
+                collapsedBackgroundColor: Colors.white,
+                backgroundColor: Colors.white,
+                title: Folder(file: file),
+                // leading: Icon(file is Directory ? Icons.folder : Icons.file_copy),
 
-              controlAffinity: ListTileControlAffinity.leading,
-              onExpansionChanged: (isExpanded) {
-                if (isExpanded) {}
-              },
-              tilePadding: EdgeInsets.only(left: tilePadding.toDouble()),
-              children: [
-                FileExplorer(
-                    directoryPath: file.path, tilePadding: tilePadding + 20),
-              ],
-              trailing: ContextMenu(
-                items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
-              ),
-            );
-          } else {
-            return ListTile(
-              tileColor: Colors.white,
-              title: Row(
+                controlAffinity: ListTileControlAffinity.leading,
+                onExpansionChanged: (isExpanded) {
+                  if (isExpanded) {}
+                },
+                tilePadding: EdgeInsets.only(left: tilePadding.toDouble()),
                 children: [
-                  // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
-                  SizedBox(width: 57),
-                  if (_isVideo(file)) ...[
-                    Icon(Icons.video_library)
-                  ] else if (_isTextFile(file)) ...[
-                    Icon(Icons.description)
-                  ] else ...[
-                    Icon(Icons.file_copy)
-                  ],
-
-                  SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      path.basename(file.path),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  FileExplorer(
+                      directoryPath: file.path, tilePadding: tilePadding + 20),
                 ],
-              ),
-              onTap: () {
-                ref.watch(fileSelectedProvider.notifier).selectFile(file.path);
-              },
-              trailing: ContextMenu(
-                items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
-              ),
-            );
-          }
-        },
-      ),
-    );
+                trailing: ContextMenu(
+                  items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+                ),
+              );
+            } else {
+              return ListTile(
+                tileColor: Colors.white,
+                title: Row(
+                  children: [
+                    // Icon(_isVideo(file) ? Icons.video_library : Icons.file_copy),
+                    SizedBox(width: 57),
+                    if (_isVideo(file)) ...[
+                      Icon(Icons.video_library)
+                    ] else if (_isTextFile(file)) ...[
+                      Icon(Icons.description)
+                    ] else ...[
+                      Icon(Icons.file_copy)
+                    ],
+
+                    SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        path.basename(file.path),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  ref
+                      .watch(fileSelectedProvider.notifier)
+                      .selectFile(file.path);
+                },
+                trailing: ContextMenu(
+                  items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }
   }
 }
 

@@ -8,9 +8,10 @@ class GraphRackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: GraphDisplay(), flex: 4),
-        Expanded(child: GraphRack(), flex: 1),
+        Expanded(child: GraphDisplay()),
+        GraphRack(),
       ],
     );
   }

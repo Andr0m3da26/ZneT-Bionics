@@ -3,10 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
-
-enum FileOptions { openProject, newProject }
-
-enum SettingsOptions { preferences, help, exit }
+import 'package:providerarchitecturetest/widgets/newproject.dart';
 
 class NavbarContainer extends ConsumerWidget {
   FileOptions? selectedMenu;
@@ -14,6 +11,7 @@ class NavbarContainer extends ConsumerWidget {
   NavbarContainer({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final fileOptions = ref.watch(fileOptionsHandler.notifier);
     return SizedBox(
       height: 100,
       child: Container(
@@ -30,23 +28,27 @@ class NavbarContainer extends ConsumerWidget {
                   NavbarButton(
                     tooltip: "File menu",
                     icon: Icons.insert_drive_file,
-                    onSelected: (dynamic item) {
+                    onSelected: (item) {
+                      fileOptions.handleSelection(item, context);
+                      // dialogBuilder(context);
                       debugPrint("File menu selected");
                     },
                     onOpened: () => debugPrint("File menu opened"),
                     menuItems: <PopupMenuEntry<dynamic>>[
                       PopupMenuItem<dynamic>(
                         value: FileOptions.newProject,
-                        child: Text('New Project'),
+                        child: const Text('New Project'),
                         onTap: () async {
-                          // Add your code here
+                          // dialogBuilder(context);
                         },
                       ),
                       PopupMenuItem<dynamic>(
                         value: FileOptions.openProject,
-                        child: Text('Open Project'),
+                        child: const Text('Open Project'),
                         onTap: () async {
+                          // debugPrint("Open Project menu item selected");
                           // Add your code here
+                          // fileOptions.openProject();
                         },
                       ),
                     ],
@@ -78,21 +80,23 @@ class NavbarContainer extends ConsumerWidget {
                     menuItems: <PopupMenuEntry<dynamic>>[
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.preferences,
-                        child: Text('Preferences'),
+                        child: const Text('Preferences'),
                         onTap: () async {
+                          debugPrint("Preferences menu item selected");
                           // Add your code here
                         },
                       ),
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.help,
-                        child: Text('Help'),
+                        child: const Text('Help'),
                         onTap: () async {
+                          debugPrint("Help menu item selected");
                           // Add your code here
                         },
                       ),
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.exit,
-                        child: Text('Exit'),
+                        child: const Text('Exit'),
                         onTap: () async {
                           // Add your code here
                           exit(0);
