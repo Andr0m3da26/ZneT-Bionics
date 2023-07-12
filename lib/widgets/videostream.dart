@@ -19,27 +19,25 @@ class VideoStream extends ConsumerWidget {
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
-          return Positioned.fill(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Image.memory(
-                    data['camdata'],
-                    gaplessPlayback: true,
-                    excludeFromSemantics: true,
-                  ),
+          return Row(
+            children: [
+              Expanded(
+                child: Image.memory(
+                  data['camdata'],
+                  gaplessPlayback: true,
+                  excludeFromSemantics: true,
                 ),
-                isVirtualCanvasToggle
-                    ? Expanded(
-                        child: Image.memory(
-                          data['vcdata'],
-                          gaplessPlayback: true,
-                          excludeFromSemantics: true,
-                        ),
-                      )
-                    : Container()
-              ],
-            ),
+              ),
+              isVirtualCanvasToggle
+                  ? Expanded(
+                      child: Image.memory(
+                        data['vcdata'],
+                        gaplessPlayback: true,
+                        excludeFromSemantics: true,
+                      ),
+                    )
+                  : Container()
+            ],
           );
         },
         loading: () => const CircularProgressIndicator(),
@@ -70,8 +68,7 @@ class VideoStream extends ConsumerWidget {
       final fileSelected = ref.watch(fileSelectedProvider);
       return virtualCanvas.when(
           data: (data) {
-            return Positioned.fill(
-                child: Container(child: Text("success: $fileSelected")));
+            return Container(child: Text("success: $fileSelected"));
           },
           loading: () => const CircularProgressIndicator(),
           error: (err, stack) {
@@ -81,10 +78,8 @@ class VideoStream extends ConsumerWidget {
           skipLoadingOnRefresh: false);
     }
 
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(color: Colors.grey[600]),
-      ),
+    return Container(
+      decoration: BoxDecoration(color: Colors.grey[600]),
     );
   }
 }

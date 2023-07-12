@@ -58,6 +58,21 @@ class IsVirtualCanvasToggle extends Notifier<bool> {
   }
 }
 
+final recordingToggleProvider = NotifierProvider<IsRecordingToggle, bool>(() {
+  return IsRecordingToggle();
+});
+
+class IsRecordingToggle extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void toggle() {
+    state = !state;
+  }
+}
+
 final websocketStreamProvider = Provider((ref) {
   final channel = ref.watch(websocketProvider);
   return channel.stream.asBroadcastStream();
@@ -77,7 +92,9 @@ class Channel extends Notifier<WebSocketChannel> {
     //print if websocket connection is closed
     debugPrint(state.closeCode.toString());
     if (state.closeCode != null) {
-      state = IOWebSocketChannel.connect("ws://localhost:5000");
+      Future.delayed(const Duration(seconds: 0), () {
+        state = IOWebSocketChannel.connect("ws://localhost:5000");
+      });
     }
     state.sink.add(message);
   }
@@ -175,10 +192,12 @@ class GraphsList extends Notifier<List<Graph>> {
 
   void addGraph(Graph graph) {
     state = [...state, graph];
+    debugPrint(state.length.toString());
   }
 
   void removeGraph(Graph graph) {
     state = state.where((element) => element != graph).toList();
+    debugPrint(state.length.toString());
   }
 }
 

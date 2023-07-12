@@ -48,6 +48,7 @@ class AnalysisScreen extends ConsumerWidget {
     channelNotifier.send(jsonEncode({
       "isCameraToggle": ref.watch(cameraToggleProvider),
       "isVirtualCanvasToggle": ref.watch(virtualCanvasToggleProvider),
+      "isRecording": ref.watch(recordingToggleProvider),
       "fileSelectedPath": ref.watch(fileSelectedProvider),
       "projectPath": ref.watch(projectPathProvider)?.path
     }));
