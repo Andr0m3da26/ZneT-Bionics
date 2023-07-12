@@ -35,7 +35,7 @@ class GraphTile extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge, "${graph.title}"),
         // subtitle: Text("${date.toString().substring(0, 16)}"),
         subtitle: Text("${graph.date.toString().substring(0, 16)}"),
-        trailing: ContextMenu(items: ["Rename", "Delete"]),
+        trailing: ContextMenu(items: ["Rename", "Delete"], path: ""),
         onTap: onTap,
       ),
     );

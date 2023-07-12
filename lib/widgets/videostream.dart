@@ -14,11 +14,12 @@ class VideoStream extends ConsumerWidget {
     // final channelNotifier = ref.watch(websocketProvider.notifier);
     // channelNotifier.send(
     //       jsonEncode({"isCameraToggle": isCameraToggle, "isVirtualCanvasToggle": isVirtualCanvasToggle}));
+
     if (isCameraToggle) {
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
         data: (data) {
-          return Expanded(
+          return Positioned.fill(
             child: Row(
               children: [
                 Expanded(
@@ -69,7 +70,7 @@ class VideoStream extends ConsumerWidget {
       final fileSelected = ref.watch(fileSelectedProvider);
       return virtualCanvas.when(
           data: (data) {
-            return Expanded(
+            return Positioned.fill(
                 child: Container(child: Text("success: $fileSelected")));
           },
           loading: () => const CircularProgressIndicator(),
@@ -80,7 +81,7 @@ class VideoStream extends ConsumerWidget {
           skipLoadingOnRefresh: false);
     }
 
-    return Expanded(
+    return Positioned.fill(
       child: Container(
         decoration: BoxDecoration(color: Colors.grey[600]),
       ),

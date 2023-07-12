@@ -96,7 +96,11 @@ class GraphDisplayState extends ConsumerState<GraphDisplay> {
           )
         : Container(
             decoration: BoxDecoration(color: Colors.grey),
-            child: Center(child: Text("Click a graph to display it here.")),
+            child: Center(
+                child: Text(
+              "Click a graph to display it here.",
+              style: Theme.of(context).textTheme.titleMedium,
+            )),
           );
   }
 }

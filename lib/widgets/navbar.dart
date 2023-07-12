@@ -6,12 +6,12 @@ import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:providerarchitecturetest/widgets/newproject.dart';
 
 class NavbarContainer extends ConsumerWidget {
-  FileOptions? selectedMenu;
+  ProjectOptions? selectedMenu;
 
   NavbarContainer({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fileOptions = ref.watch(fileOptionsHandler.notifier);
+    final fileOptions = ref.watch(projectOptionsHandler.notifier);
     return SizedBox(
       height: 100,
       child: Container(
@@ -36,15 +36,15 @@ class NavbarContainer extends ConsumerWidget {
                     onOpened: () => debugPrint("File menu opened"),
                     menuItems: <PopupMenuEntry<dynamic>>[
                       PopupMenuItem<dynamic>(
-                        value: FileOptions.newProject,
-                        child: const Text('New Project'),
+                        value: ProjectOptions.newProject,
+                        child: const Text('New Project...'),
                         onTap: () async {
                           // dialogBuilder(context);
                         },
                       ),
                       PopupMenuItem<dynamic>(
-                        value: FileOptions.openProject,
-                        child: const Text('Open Project'),
+                        value: ProjectOptions.openProject,
+                        child: const Text('Open Project...'),
                         onTap: () async {
                           // debugPrint("Open Project menu item selected");
                           // Add your code here

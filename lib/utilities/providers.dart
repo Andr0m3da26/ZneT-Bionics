@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:async";
 import "dart:io";
+
 import "dart:typed_data";
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -73,6 +74,11 @@ class Channel extends Notifier<WebSocketChannel> {
   }
 
   void send(String message) {
+    //print if websocket connection is closed
+    debugPrint(state.closeCode.toString());
+    if (state.closeCode != null) {
+      state = IOWebSocketChannel.connect("ws://localhost:5000");
+    }
     state.sink.add(message);
   }
 }
@@ -195,15 +201,15 @@ class GraphSelected extends Notifier<Graph?> {
   }
 }
 
-enum FileOptions { openProject, newProject }
+enum ProjectOptions { openProject, newProject }
 
 enum SettingsOptions { preferences, help, exit }
 
-final fileOptionsHandler = NotifierProvider<FileOptionsHandler, bool>(() {
-  return FileOptionsHandler();
+final projectOptionsHandler = NotifierProvider<ProjectOptionsHandler, bool>(() {
+  return ProjectOptionsHandler();
 });
 
-class FileOptionsHandler extends Notifier<bool> {
+class ProjectOptionsHandler extends Notifier<bool> {
   @override
   bool build() {
     return false;
@@ -211,11 +217,11 @@ class FileOptionsHandler extends Notifier<bool> {
 
   void handleSelection(item, BuildContext context) {
     switch (item) {
-      case FileOptions.newProject:
+      case ProjectOptions.newProject:
         debugPrint("new project");
         newProject(context);
         break;
-      case FileOptions.openProject:
+      case ProjectOptions.openProject:
         debugPrint("open project");
         openProject();
         break;
@@ -254,4 +260,66 @@ class FileOptionsHandler extends Notifier<bool> {
     }
     ref.watch(projectPathProvider.notifier).selectDirectory(strFolderDir);
   }
+}
+
+final fileOptionsHandler = NotifierProvider<FileOptionsHandler, bool>(() {
+  return FileOptionsHandler();
+});
+
+class FileOptionsHandler extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void handleSelection(String item, String path) {
+    switch (item) {
+      case "Add file...":
+        debugPrint("add file");
+        addFile(path);
+        break;
+      case "Rename":
+        debugPrint("rename");
+        renameFile(path, "newName");
+        break;
+      case "Delete":
+        debugPrint("delete");
+        deleteFile(path);
+        break;
+      default:
+        debugPrint("invalid item");
+        break;
+    }
+  }
+
+  void addFile(String path) async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'videos or text files',
+      extensions: <String>['.mp4', '.avi', '.mkv', '.mov', '.txt'],
+    );
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file == null) {
+      return;
+    }
+    await File(file.path).rename('$path\\${file.name}');
+  }
+
+  void renameFile(String path, String newName) async {
+    // const XTypeGroup typeGroup = XTypeGroup(
+    //   label: 'videos or text files',
+    //   extensions: <String>['.mp4', '.avi', '.mkv', '.mov', '.txt'],
+    // );
+    // final XFile? file =
+    //     await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    // if (file == null) {
+    //   return;
+    // }
+    int lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+    String newPath = path.substring(0, lastSeparator + 1) + newName;
+
+    await File(path).rename(newPath);
+  }
+
+  void deleteFile(String path) async {}
 }

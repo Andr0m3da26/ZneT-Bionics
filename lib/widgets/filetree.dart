@@ -32,9 +32,6 @@ class FileExplorer extends ConsumerWidget {
     if (directoryPath == null) {
       return SizedBox(
         width: 300,
-        child: Center(
-          child: Text("Open a project"),
-        ),
       );
     } else {
       final directory = Directory(directoryPath!);
@@ -65,7 +62,8 @@ class FileExplorer extends ConsumerWidget {
                       directoryPath: file.path, tilePadding: tilePadding + 20),
                 ],
                 trailing: ContextMenu(
-                  items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+                  items: ["Add file...", "Rename", "Delete"],
+                  path: file.path,
                 ),
               );
             } else {
@@ -98,7 +96,8 @@ class FileExplorer extends ConsumerWidget {
                       .selectFile(file.path);
                 },
                 trailing: ContextMenu(
-                  items: ["Cut", "Copy", "Paste", "Rename", "Delete"],
+                  items: ["Rename", "Delete"],
+                  path: file.path,
                 ),
               );
             }

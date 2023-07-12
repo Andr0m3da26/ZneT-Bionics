@@ -8,6 +8,7 @@ import 'package:providerarchitecturetest/widgets/dropdown.dart';
 import 'package:providerarchitecturetest/widgets/filetree.dart';
 import 'package:providerarchitecturetest/widgets/mediacontrols.dart';
 import 'package:providerarchitecturetest/widgets/videostream.dart';
+import 'package:providerarchitecturetest/widgets/welcome.dart';
 
 // class AnalysisScreen extends ConsumerWidget {
 //   const AnalysisScreen({super.key});
@@ -47,60 +48,62 @@ class AnalysisScreen extends ConsumerWidget {
     channelNotifier.send(jsonEncode({
       "isCameraToggle": ref.watch(cameraToggleProvider),
       "isVirtualCanvasToggle": ref.watch(virtualCanvasToggleProvider),
-      "fileSelectedPath": ref.watch(fileSelectedProvider)
+      "fileSelectedPath": ref.watch(fileSelectedProvider),
+      "projectPath": ref.watch(projectPathProvider)?.path
     }));
     return Column(
       children: [
         Expanded(
-          child: Stack(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  FileExplorer(
-                      directoryPath: projectPath?.path, tilePadding: 0),
-                  VideoStream(),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(20.0),
-                          alignment: Alignment.topRight,
-                          child: IconButtonWithAnimatedToolbar(
-                            // This is the widget we created
-                            onCameraOptionSelected: () {
-                              ref.watch(cameraToggleProvider.notifier).toggle();
-                            },
-                            onCameraOptionDeselected: () {
-                              ref.watch(cameraToggleProvider.notifier).toggle();
-                            },
-                            onGraphOptionSelected: () {
-                              ref
-                                  .watch(virtualCanvasToggleProvider.notifier)
-                                  .toggle();
-                            },
-                            onGraphOptionDeselected: () {
-                              ref
-                                  .watch(virtualCanvasToggleProvider.notifier)
-                                  .toggle();
-                            },
+              FileExplorer(directoryPath: projectPath?.path, tilePadding: 0),
+              Expanded(
+                child: projectPath != null
+                    ? Stack(children: [
+                        Center(child: VideoStream()),
+                        Column(children: [
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.all(20.0),
+                              alignment: Alignment.topRight,
+                              child: IconButtonWithAnimatedToolbar(
+                                // This is the widget we created
+                                onCameraOptionSelected: () {
+                                  ref
+                                      .watch(cameraToggleProvider.notifier)
+                                      .toggle();
+                                },
+                                onCameraOptionDeselected: () {
+                                  ref
+                                      .watch(cameraToggleProvider.notifier)
+                                      .toggle();
+                                },
+                                onGraphOptionSelected: () {
+                                  ref
+                                      .watch(
+                                          virtualCanvasToggleProvider.notifier)
+                                      .toggle();
+                                },
+                                onGraphOptionDeselected: () {
+                                  ref
+                                      .watch(
+                                          virtualCanvasToggleProvider.notifier)
+                                      .toggle();
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                          child: Container(
-                        padding: EdgeInsets.all(20.0),
-                        alignment: Alignment.bottomRight,
-                        child: IconButton(
-                            onPressed: () {}, icon: Icon(Icons.fullscreen)),
-                      )),
-                    ]),
-                  )
-                ],
-              )
+                          Expanded(
+                              child: Container(
+                            padding: EdgeInsets.all(20.0),
+                            alignment: Alignment.bottomRight,
+                            child: IconButton(
+                                onPressed: () {}, icon: Icon(Icons.fullscreen)),
+                          )),
+                        ]),
+                      ])
+                    : Welcome(),
+              ),
             ],
           ),
         ),
