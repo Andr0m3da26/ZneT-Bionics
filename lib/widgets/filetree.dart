@@ -94,6 +94,11 @@ class FileExplorer extends ConsumerWidget {
                   ref
                       .watch(fileSelectedProvider.notifier)
                       .selectFile(file.path);
+                  if (_isVideo(file)) {
+                    ref.watch(playerProvider.notifier).open(file.path);
+
+                    // ref.watch(playerProvider.notifier).seek(Duration.zero);
+                  }
                 },
                 trailing: ContextMenu(
                   items: ["Rename", "Delete"],

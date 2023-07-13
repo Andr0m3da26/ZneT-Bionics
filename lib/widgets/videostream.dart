@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:math';
+import 'package:providerarchitecturetest/widgets/videoplayer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
@@ -43,6 +42,28 @@ class VideoStream extends ConsumerWidget {
         loading: () => const CircularProgressIndicator(),
         error: (err, stack) => Text('Error: $err'),
       );
+    } else {
+      final virtualCanvas = ref.watch(virtualCanvasProvider);
+      final fileSelected = ref.watch(fileSelectedProvider);
+      return Row(
+        children: [
+          Expanded(child: VideoPlayer()),
+          isVirtualCanvasToggle
+              ? virtualCanvas.when(
+                  data: (data) {
+                    return Container(child: Text("success: $fileSelected"));
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (err, stack) {
+                    debugPrint(stack.toString());
+                    return Text('Error: $err');
+                  },
+                  skipLoadingOnRefresh: false)
+              : Container(
+                  decoration: BoxDecoration(color: Colors.grey[600]),
+                ),
+        ],
+      );
     }
 
     // if (isCameraToggle && !isVirtualCanvasToggle) {
@@ -63,23 +84,23 @@ class VideoStream extends ConsumerWidget {
     //     error: (err, stack) => Text('Error: $err'),
     //   );
     // }
-    if (isVirtualCanvasToggle && !isCameraToggle) {
-      final virtualCanvas = ref.watch(virtualCanvasProvider);
-      final fileSelected = ref.watch(fileSelectedProvider);
-      return virtualCanvas.when(
-          data: (data) {
-            return Container(child: Text("success: $fileSelected"));
-          },
-          loading: () => const CircularProgressIndicator(),
-          error: (err, stack) {
-            debugPrint(stack.toString());
-            return Text('Error: $err');
-          },
-          skipLoadingOnRefresh: false);
-    }
+    // if (isVirtualCanvasToggle && !isCameraToggle) {
+    //   final virtualCanvas = ref.watch(virtualCanvasProvider);
+    //   final fileSelected = ref.watch(fileSelectedProvider);
+    //   return virtualCanvas.when(
+    //       data: (data) {
+    //         return Container(child: Text("success: $fileSelected"));
+    //       },
+    //       loading: () => const CircularProgressIndicator(),
+    //       error: (err, stack) {
+    //         debugPrint(stack.toString());
+    //         return Text('Error: $err');
+    //       },
+    //       skipLoadingOnRefresh: false);
+    // }
 
-    return Container(
-      decoration: BoxDecoration(color: Colors.grey[600]),
-    );
+    // return Container(
+    //   decoration: BoxDecoration(color: Colors.grey[600]),
+    // );
   }
 }

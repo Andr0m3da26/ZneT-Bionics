@@ -1,10 +1,11 @@
 import "dart:convert";
 import "dart:async";
 import "dart:io";
-
+import 'package:dart_vlc/dart_vlc.dart';
 import "dart:typed_data";
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import 'package:path/path.dart' as p;
 import "package:web_socket_channel/io.dart";
 import "package:web_socket_channel/web_socket_channel.dart";
 import "package:web_socket_channel/status.dart" as status;
@@ -73,6 +74,56 @@ class IsRecordingToggle extends Notifier<bool> {
   }
 }
 
+final playOrPauseToggleProvider =
+    NotifierProvider<IsPlayOrPauseToggle, bool>(() {
+  return IsPlayOrPauseToggle();
+});
+
+class IsPlayOrPauseToggle extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void toggle() {
+    state = !state;
+  }
+}
+
+// final playerPositionProvider =
+//     NotifierProvider<PlayerPosition, PositionState>(() {
+//   return PlayerPosition();
+// });
+
+// class PlayerPosition extends Notifier<PositionState> {
+//   @override
+//   PositionState build() {
+//     final player = ref.watch(playerProvider);
+//     return player.position;
+//   }
+
+//   void setDuration(Duration duration) {
+//     state.duration = duration;
+//   }
+
+//   void setPosition(Duration position) {
+//     state.position = position;
+//   }
+// }
+
+// final playerPositionStreamProvider =
+//     StreamProvider.autoDispose<double>((ref) async* {
+//   final player = ref.watch(playerPositionProvider);
+//   await for (final positionState in player.stream) {
+//     yield positionState.position!.inMilliseconds.toDouble();
+//   }
+// });
+
+// final playerPositionProvider = Provider((ref) {
+//   final player = ref.watch(playerProvider);
+//   return player.positionController;
+// });
+
 final websocketStreamProvider = Provider((ref) {
   final channel = ref.watch(websocketProvider);
   return channel.stream.asBroadcastStream();
@@ -135,6 +186,110 @@ final videoStreamAndVirtualCanvasProvider =
     yield data;
   }
 });
+
+final playerProvider = NotifierProvider<PlayerController, Player>(() {
+  return PlayerController();
+});
+
+class PlayerController extends Notifier<Player> {
+  @override
+  Player build() {
+    return Player(
+      id: 00,
+    );
+  }
+
+  void open(String path) {
+    // String selectedFile = ref.watch(fileSelectedProvider);
+    bool _isVideo(FileSystemEntity file) {
+      final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
+      final extension = p.extension(file.path).toLowerCase();
+      return videoExtensions.contains(extension);
+    }
+
+    if (_isVideo(File(path))) {
+      state.open(Media.file(File(path)), autoStart: false);
+      state.play();
+      state.seek(Duration(seconds: 0));
+      Future.delayed(Duration.zero, () {
+        state.pause();
+      });
+    }
+  }
+
+  void play() {
+    state.play();
+  }
+
+  void pause() {
+    state.pause();
+  }
+
+  void playorpause() {
+    state.playOrPause();
+  }
+
+  void seek(Duration position) {
+    state.seek(position);
+  }
+
+  void fastForward() {
+    state.seek(state.position.position! + Duration(seconds: 5));
+  }
+
+  void fastRewind() {
+    state.seek(state.position.position! - Duration(seconds: 5));
+  }
+  // void seek(Duration position) {
+  //   state.seek(position);
+  // }
+}
+
+final playerPlaybackStreamProvider =
+    StreamProvider.autoDispose<PlaybackState>((ref) async* {
+  final player = ref.watch(playerProvider);
+  await for (final playbackState in player.playbackStream) {
+    yield playbackState;
+  }
+});
+
+final playerPositionStreamProvider =
+    StreamProvider.autoDispose<PositionState>((ref) async* {
+  final player = ref.watch(playerProvider);
+  await for (final positionState in player.positionStream) {
+    yield positionState;
+  }
+});
+
+final videoPlayerProvider = NotifierProvider<VideoPlayerClass, Video>(() {
+  return VideoPlayerClass();
+});
+
+class VideoPlayerClass extends Notifier<Video> {
+  List<Map<String, dynamic>> videoData = [];
+
+  @override
+  Video build() {
+    final videoPlayer = ref.watch(playerProvider);
+    return Video(
+      player: videoPlayer,
+      showControls: false,
+    );
+  }
+
+  // void open(String path) {
+  //   // String selectedFile = ref.watch(fileSelectedProvider);
+  //   bool _isVideo(FileSystemEntity file) {
+  //     final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
+  //     final extension = p.extension(file.path).toLowerCase();
+  //     return videoExtensions.contains(extension);
+  //   }
+
+  //   if (_isVideo(File(path))) {
+  //     videoPlayer.open(Media.file(File(path)), autoStart: false);
+  //   }
+  // }
+}
 
 final fileSelectedProvider = NotifierProvider<FileSelected, String>(() {
   return FileSelected();
