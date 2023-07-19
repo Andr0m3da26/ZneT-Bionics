@@ -27,8 +27,6 @@ class FileExplorer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final projectPath = ref.watch(projectPathProvider);
-
     if (directoryPath == null) {
       return SizedBox(
         width: 300,

@@ -126,28 +126,40 @@ class IsPlayOrPauseToggle extends Notifier<bool> {
 
 final websocketStreamProvider = Provider((ref) {
   final channel = ref.watch(websocketProvider);
-  return channel.stream.asBroadcastStream();
+  return channel!.stream.asBroadcastStream();
 });
 
-final websocketProvider = NotifierProvider<Channel, WebSocketChannel>(() {
+final websocketProvider = NotifierProvider<Channel, WebSocketChannel?>(() {
   return Channel();
 });
 
-class Channel extends Notifier<WebSocketChannel> {
+class Channel extends Notifier<WebSocketChannel?> {
   @override
-  WebSocketChannel build() {
-    return IOWebSocketChannel.connect("ws://localhost:5000");
+  WebSocketChannel? build() {
+    try {
+      return IOWebSocketChannel.connect("ws://localhost:5000");
+    } on Error {
+      debugPrint("Failed to connect to websocket");
+      return null;
+    }
   }
 
   void send(String message) {
     //print if websocket connection is closed
-    debugPrint(state.closeCode.toString());
-    if (state.closeCode != null) {
-      Future.delayed(const Duration(seconds: 0), () {
-        state = IOWebSocketChannel.connect("ws://localhost:5000");
-      });
+    if (state != null) {
+      debugPrint(state!.closeCode.toString());
+      if (state!.closeCode != null) {
+        Future.delayed(const Duration(seconds: 0), () {
+          try {
+            state = IOWebSocketChannel.connect("ws://localhost:5000");
+          } on Error {
+            debugPrint("Failed to connect to websocket");
+            state = null;
+          }
+        });
+      }
+      state!.sink.add(message);
     }
-    state.sink.add(message);
   }
 }
 
@@ -496,4 +508,19 @@ class FileOptionsHandler extends Notifier<bool> {
   }
 
   void deleteFile(String path) async {}
+}
+
+final fileTreeExpandedProvider = NotifierProvider<IsFileTreeExpanded, bool>(() {
+  return IsFileTreeExpanded();
+});
+
+class IsFileTreeExpanded extends Notifier<bool> {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void toggle() {
+    state = !state;
+  }
 }

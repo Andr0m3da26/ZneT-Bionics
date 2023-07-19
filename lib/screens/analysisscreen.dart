@@ -5,7 +5,7 @@ import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:providerarchitecturetest/widgets/dropdown.dart';
-import 'package:providerarchitecturetest/widgets/filetree.dart';
+import 'package:providerarchitecturetest/widgets/filetreecontainer.dart';
 import 'package:providerarchitecturetest/widgets/mediacontrols.dart';
 import 'package:providerarchitecturetest/widgets/videostream.dart';
 import 'package:providerarchitecturetest/widgets/welcome.dart';
