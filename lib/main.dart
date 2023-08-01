@@ -42,6 +42,7 @@ class MyApp extends ConsumerWidget {
     final int _selectedIndex = ref.watch(screenIndexProvider);
 
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             useMaterial3: true,
             textTheme:
