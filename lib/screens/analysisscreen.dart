@@ -1,49 +1,24 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:providerarchitecturetest/widgets/dropdown.dart';
 import 'package:providerarchitecturetest/widgets/filetree.dart';
 import 'package:providerarchitecturetest/widgets/mediacontrols.dart';
 import 'package:providerarchitecturetest/widgets/videostream.dart';
 import 'package:providerarchitecturetest/widgets/welcome.dart';
 
-// class AnalysisScreen extends ConsumerWidget {
-//   const AnalysisScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     return Row(
-//       children: [
-//         FileExplorer(
-//             directoryPath: r"C:\Users\kiera\OneDrive\Documents\Projects",
-//             tilePadding: 0),
-//         IconButtonWithAnimatedToolbar(
-//           // This is the widget we created
-//           onCameraOptionSelected: () {
-//             ref.watch(cameraToggleProvider.notifier).toggle();
-//           },
-//           onCameraOptionDeselected: () {
-//             ref.watch(cameraToggleProvider.notifier).toggle();
-//           },
-//           onGraphOptionSelected: () {},
-//           onGraphOptionDeselected: () {},
-//         ),
-//         VideoStream(),
-//       ],
-//     );
-//   }
-// }
-
+// This is the AnalysisScreen widget, which is a ConsumerWidget that displays the analysis screen
 class AnalysisScreen extends ConsumerWidget {
   const AnalysisScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Get the websocket notifier from the provider
     final channelNotifier = ref.watch(websocketProvider.notifier);
+    // Get the project path from the provider
     final projectPath = ref.watch(projectPathProvider);
+    // Send data to the websocket
     debugPrint("Sending data to websocket");
     channelNotifier.send(jsonEncode({
       "isCameraToggle": ref.watch(cameraToggleProvider),
@@ -52,15 +27,19 @@ class AnalysisScreen extends ConsumerWidget {
       "fileSelectedPath": ref.watch(fileSelectedProvider),
       "projectPath": ref.watch(projectPathProvider)?.path
     }));
+
+    // Build the analysis screen
     return Column(
       children: [
         Expanded(
           child: Row(
             children: [
+              // Build the file explorer
               FileExplorer(directoryPath: projectPath?.path, tilePadding: 0),
               Expanded(
                 child: projectPath != null
                     ? Stack(children: [
+                        // Build the video stream
                         Center(child: VideoStream()),
                         Column(children: [
                           Expanded(
@@ -68,7 +47,7 @@ class AnalysisScreen extends ConsumerWidget {
                               padding: EdgeInsets.all(20.0),
                               alignment: Alignment.topRight,
                               child: IconButtonWithAnimatedToolbar(
-                                // This is the widget we created
+                                // Build dropdown menu
                                 onCameraOptionSelected: () {
                                   ref
                                       .watch(cameraToggleProvider.notifier)
@@ -94,6 +73,7 @@ class AnalysisScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
+                          // Build the fullscreen button
                           Expanded(
                               child: Container(
                             padding: EdgeInsets.all(20.0),
@@ -103,11 +83,13 @@ class AnalysisScreen extends ConsumerWidget {
                           )),
                         ]),
                       ])
+                    // Build the welcome message
                     : Welcome(),
               ),
             ],
           ),
         ),
+        // Build the media controls
         MediaControls()
       ],
     );

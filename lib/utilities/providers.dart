@@ -8,10 +8,13 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:path/path.dart' as p;
 import "package:web_socket_channel/io.dart";
 import "package:web_socket_channel/web_socket_channel.dart";
-import "package:web_socket_channel/status.dart" as status;
 import 'package:uuid/uuid.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:providerarchitecturetest/widgets/newproject.dart';
+
+/// This file contains all the state management of the app. Providers are used to
+/// store and manage state in the app. Providers are also used to handle events
+/// and perform actions in the app.
 
 final screenIndexProvider = NotifierProvider<ScreenIndex, int>(() {
   return ScreenIndex();
@@ -90,40 +93,6 @@ class IsPlayOrPauseToggle extends Notifier<bool> {
   }
 }
 
-// final playerPositionProvider =
-//     NotifierProvider<PlayerPosition, PositionState>(() {
-//   return PlayerPosition();
-// });
-
-// class PlayerPosition extends Notifier<PositionState> {
-//   @override
-//   PositionState build() {
-//     final player = ref.watch(playerProvider);
-//     return player.position;
-//   }
-
-//   void setDuration(Duration duration) {
-//     state.duration = duration;
-//   }
-
-//   void setPosition(Duration position) {
-//     state.position = position;
-//   }
-// }
-
-// final playerPositionStreamProvider =
-//     StreamProvider.autoDispose<double>((ref) async* {
-//   final player = ref.watch(playerPositionProvider);
-//   await for (final positionState in player.stream) {
-//     yield positionState.position!.inMilliseconds.toDouble();
-//   }
-// });
-
-// final playerPositionProvider = Provider((ref) {
-//   final player = ref.watch(playerProvider);
-//   return player.positionController;
-// });
-
 final websocketStreamProvider = Provider((ref) {
   final channel = ref.watch(websocketProvider);
   return channel.stream.asBroadcastStream();
@@ -140,7 +109,6 @@ class Channel extends Notifier<WebSocketChannel> {
   }
 
   void send(String message) {
-    //print if websocket connection is closed
     debugPrint(state.closeCode.toString());
     if (state.closeCode != null) {
       Future.delayed(const Duration(seconds: 0), () {
@@ -152,12 +120,8 @@ class Channel extends Notifier<WebSocketChannel> {
 }
 
 final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
-  // final channel = ref.watch(websocketProvider);
   final stream = ref.watch(websocketStreamProvider);
   final graphsListNotifier = ref.watch(graphsProvider.notifier);
-  // ref.onDispose(() => channel.sink.close());
-  // channel.sink.add(jsonEncode(
-  //     {"command": "video", "path": ref.watch(fileSelectedProvider)}));
 
   final Map data = jsonDecode(await stream.first);
   graphsListNotifier.addGraph(Graph(
@@ -169,17 +133,9 @@ final virtualCanvasProvider = FutureProvider.autoDispose<Map>((ref) async {
 
 final videoStreamAndVirtualCanvasProvider =
     StreamProvider.autoDispose<Map>((ref) async* {
-  // final channel = ref.watch(websocketProvider);
   final stream = ref.watch(websocketStreamProvider);
-  // final channelNotifier = ref.watch(websocketProvider.notifier);
-
-  // debugPrint("sending message");
-  // channelNotifier.send(jsonEncode({'isCameraToggle': true}));
-  // debugPrint("sent message");
 
   await for (final json in stream) {
-    // A new message has been received. Let"s add it to the list of all messages.
-    // allMessages = [...allMessages, message];
     final Map data = jsonDecode(json);
     data["camdata"] = Uint8List.fromList(base64Decode(data["camdata"]));
     data["vcdata"] = Uint8List.fromList(base64Decode(data["vcdata"]));
@@ -200,13 +156,13 @@ class PlayerController extends Notifier<Player> {
   }
 
   void open(String path) {
-    // String selectedFile = ref.watch(fileSelectedProvider);
     bool _isVideo(FileSystemEntity file) {
       final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
       final extension = p.extension(file.path).toLowerCase();
       return videoExtensions.contains(extension);
     }
 
+    // Validate the selected file type(s) or file extension(s) before opening the file
     if (_isVideo(File(path))) {
       state.open(Media.file(File(path)), autoStart: false);
       state.play();
@@ -240,9 +196,6 @@ class PlayerController extends Notifier<Player> {
   void fastRewind() {
     state.seek(state.position.position! - Duration(seconds: 5));
   }
-  // void seek(Duration position) {
-  //   state.seek(position);
-  // }
 }
 
 final playerPlaybackStreamProvider =
@@ -276,19 +229,6 @@ class VideoPlayerClass extends Notifier<Video> {
       showControls: false,
     );
   }
-
-  // void open(String path) {
-  //   // String selectedFile = ref.watch(fileSelectedProvider);
-  //   bool _isVideo(FileSystemEntity file) {
-  //     final videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
-  //     final extension = p.extension(file.path).toLowerCase();
-  //     return videoExtensions.contains(extension);
-  //   }
-
-  //   if (_isVideo(File(path))) {
-  //     videoPlayer.open(Media.file(File(path)), autoStart: false);
-  //   }
-  // }
 }
 
 final fileSelectedProvider = NotifierProvider<FileSelected, String>(() {
@@ -427,7 +367,6 @@ class ProjectOptionsHandler extends Notifier<bool> {
   }
 
   void openProject() async {
-    // debugPrint("open project");
     String? strFolderDir = await getDirectoryPath();
     if (strFolderDir == null) {
       return;
@@ -467,6 +406,7 @@ class FileOptionsHandler extends Notifier<bool> {
   }
 
   void addFile(String path) async {
+    // Validate the selected file type(s) or file extension(s) before opening the file
     const XTypeGroup typeGroup = XTypeGroup(
       label: 'videos or text files',
       extensions: <String>['.mp4', '.avi', '.mkv', '.mov', '.txt'],
@@ -480,15 +420,6 @@ class FileOptionsHandler extends Notifier<bool> {
   }
 
   void renameFile(String path, String newName) async {
-    // const XTypeGroup typeGroup = XTypeGroup(
-    //   label: 'videos or text files',
-    //   extensions: <String>['.mp4', '.avi', '.mkv', '.mov', '.txt'],
-    // );
-    // final XFile? file =
-    //     await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    // if (file == null) {
-    //   return;
-    // }
     int lastSeparator = path.lastIndexOf(Platform.pathSeparator);
     String newPath = path.substring(0, lastSeparator + 1) + newName;
 

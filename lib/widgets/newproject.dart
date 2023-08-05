@@ -1,13 +1,11 @@
-//create a pop up widget that asks the user to enter a project name
-
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+// This is the dialogBuilder function, which displays a dialog for creating a new project
 Future<String?> dialogBuilder(BuildContext context, strFolderDir) async {
   String projectName = "";
   return showDialog<String?>(
       context: context,
-      // barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('New Project'),
@@ -20,29 +18,27 @@ Future<String?> dialogBuilder(BuildContext context, strFolderDir) async {
               projectName = value;
             },
             decoration: InputDecoration(hintText: "Enter Project Name"),
+            // The validator receives the text that the user has entered. If the text is empty or the project name already exists, then inform the user with the given message
             validator: (String? value) {
-              //check if the project name already exists
-              //if it does, return an error message
-              // debugPrint(value);
               if (value == null || value.isEmpty) {
-                // debugPrint("empty");
                 return 'Please enter a project name';
               }
               if (Directory("$strFolderDir\\$value").existsSync()) {
-                // debugPrint("exists");
                 return 'Project already exists';
               }
-              // debugPrint("valid");
+
               return null;
             },
           ),
           actions: <Widget>[
+            // Add a "Cancel" button to the dialog
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
             ),
+            // Add a "Create" button to the dialog
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(projectName);
@@ -53,40 +49,3 @@ Future<String?> dialogBuilder(BuildContext context, strFolderDir) async {
         );
       });
 }
-
-// Future<void> dialogBuilder(BuildContext context) {
-//   return showDialog<void>(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: const Text('Basic dialog title'),
-//         content: const Text(
-//           'A dialog is a type of modal window that\n'
-//           'appears in front of app content to\n'
-//           'provide critical information, or prompt\n'
-//           'for a decision to be made.',
-//         ),
-//         actions: <Widget>[
-//           TextButton(
-//             style: TextButton.styleFrom(
-//               textStyle: Theme.of(context).textTheme.labelLarge,
-//             ),
-//             child: const Text('Disable'),
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//           ),
-//           TextButton(
-//             style: TextButton.styleFrom(
-//               textStyle: Theme.of(context).textTheme.labelLarge,
-//             ),
-//             child: const Text('Enable'),
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }

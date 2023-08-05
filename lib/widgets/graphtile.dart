@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/widgets/contextmenu.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 
+// This is the GraphTile widget, which is a StatelessWidget that displays a single graph tile
 class GraphTile extends StatelessWidget {
   final int index;
   final Graph graph;
@@ -20,20 +21,9 @@ class GraphTile extends StatelessWidget {
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 40),
         minVerticalPadding: 40,
-
-        // children: [
-        //   Column(
-        //     children: [
-        //       Text("$title"),
-        //       Text("${date.toString()}"),
-        //     ],
-        //   ),
-        //   ContextMenu(items: ["Rename", "Delete"])
-        // ],
         key: key,
         title: Text(
             style: Theme.of(context).textTheme.titleLarge, "${graph.title}"),
-        // subtitle: Text("${date.toString().substring(0, 16)}"),
         subtitle: Text("${graph.date.toString().substring(0, 16)}"),
         trailing: ContextMenu(items: ["Rename", "Delete"], path: ""),
         onTap: onTap,

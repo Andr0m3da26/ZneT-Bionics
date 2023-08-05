@@ -1,22 +1,24 @@
 import 'package:providerarchitecturetest/widgets/videoplayer.dart';
-
 import 'package:flutter/material.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// This is the VideoStream widget, which is a ConsumerWidget that displays the video stream
 class VideoStream extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Get the isCameraToggleProvider from the providers file
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
+
+    // Get the isVirtualCanvasToggleProvider from the providers file
     final bool isVirtualCanvasToggle = ref.watch(virtualCanvasToggleProvider);
+    // Get the websocketProvider from the providers file
     final channel = ref.watch(websocketProvider);
-    // final channelNotifier = ref.watch(websocketProvider.notifier);
-    // channelNotifier.send(
-    //       jsonEncode({"isCameraToggle": isCameraToggle, "isVirtualCanvasToggle": isVirtualCanvasToggle}));
 
     if (isCameraToggle) {
       final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
       return videoStream.when(
+        // If the video stream is available, then display it
         data: (data) {
           return Row(
             children: [
@@ -27,6 +29,7 @@ class VideoStream extends ConsumerWidget {
                   excludeFromSemantics: true,
                 ),
               ),
+              // If the virtual canvas is toggled, then display it
               isVirtualCanvasToggle
                   ? Expanded(
                       child: Image.memory(
@@ -39,9 +42,12 @@ class VideoStream extends ConsumerWidget {
             ],
           );
         },
+        // If the virtual canvas is still loading, display a loading indicator
         loading: () => const CircularProgressIndicator(),
+        // If there's an error loading the virtual canvas, display an error message
         error: (err, stack) => Text('Error: $err'),
       );
+      // If the virtual canvas toggle is off, display only the video player
     } else {
       final virtualCanvas = ref.watch(virtualCanvasProvider);
       final fileSelected = ref.watch(fileSelectedProvider);
@@ -65,42 +71,5 @@ class VideoStream extends ConsumerWidget {
         ],
       );
     }
-
-    // if (isCameraToggle && !isVirtualCanvasToggle) {
-    //   channelNotifier.send(
-    //       jsonEncode({"isCameraToggle": true, "isVirtualCanvasToggle": false}));
-    //   final videoStream = ref.watch(videoStreamAndVirtualCanvasProvider);
-    //   return videoStream.when(
-    //     data: (data) {
-    //       return Expanded(
-    //         child: Image.memory(
-    //           data['camdata'],
-    //           gaplessPlayback: true,
-    //           excludeFromSemantics: true,
-    //         ),
-    //       );
-    //     },
-    //     loading: () => const CircularProgressIndicator(),
-    //     error: (err, stack) => Text('Error: $err'),
-    //   );
-    // }
-    // if (isVirtualCanvasToggle && !isCameraToggle) {
-    //   final virtualCanvas = ref.watch(virtualCanvasProvider);
-    //   final fileSelected = ref.watch(fileSelectedProvider);
-    //   return virtualCanvas.when(
-    //       data: (data) {
-    //         return Container(child: Text("success: $fileSelected"));
-    //       },
-    //       loading: () => const CircularProgressIndicator(),
-    //       error: (err, stack) {
-    //         debugPrint(stack.toString());
-    //         return Text('Error: $err');
-    //       },
-    //       skipLoadingOnRefresh: false);
-    // }
-
-    // return Container(
-    //   decoration: BoxDecoration(color: Colors.grey[600]),
-    // );
   }
 }

@@ -1,8 +1,8 @@
-import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 
+// This is the MediaControls widget, which is a ConsumerStatefulWidget that displays media controls
 class MediaControls extends ConsumerStatefulWidget {
   const MediaControls({Key? key}) : super(key: key);
 
@@ -10,6 +10,7 @@ class MediaControls extends ConsumerStatefulWidget {
   MediaControlsState createState() => MediaControlsState();
 }
 
+// This is the MediaControlsState class, which is a ConsumerState that manages the state of the MediaControls widget
 class MediaControlsState extends ConsumerState<MediaControls> {
   double _currentSliderValue = 0;
   double _maxSliderValue = 0;
@@ -20,7 +21,9 @@ class MediaControlsState extends ConsumerState<MediaControls> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the cameraToggleProvider from the providers file
     final bool isCameraToggle = ref.watch(cameraToggleProvider);
+    // If the camera toggle is on, display the recording toggle button
     if (isCameraToggle) {
       final bool isRecordingToggle = ref.watch(recordingToggleProvider);
       return Container(
@@ -29,14 +32,7 @@ class MediaControlsState extends ConsumerState<MediaControls> {
           color: Colors.white,
         ),
         child: Center(
-          child:
-              //  IconButton(
-              //     onPressed: () {
-              //       ref.watch(recordingToggleProvider.notifier).toggle();
-              //     },
-              //     icon: Icon(Icons.fiber_manual_record),
-              //     selectedIcon: Icon(Icons.stop_circle))
-              IconButton(
+          child: IconButton(
             onPressed: () {
               ref.watch(recordingToggleProvider.notifier).toggle();
             },
@@ -47,9 +43,7 @@ class MediaControlsState extends ConsumerState<MediaControls> {
         ),
       );
     } else {
-      // final PositionState value = ref.watch(playerProvider);
-      // final playerController = ref.watch(playerProvider);
-      // final playerStream = ref.watch(playerStreamProvider);
+      // Else, display the video player controls
       final playerPositionStream = ref.watch(playerPositionStreamProvider);
       final playerPlaybackStream = ref.watch(playerPlaybackStreamProvider);
       final playerNotifier = ref.watch(playerProvider.notifier);
@@ -59,11 +53,6 @@ class MediaControlsState extends ConsumerState<MediaControls> {
         if (positionState.duration!.inMilliseconds.toDouble() != 0.0 &&
             positionState.duration!.inMilliseconds.toDouble() !=
                 _maxSliderValue) {
-          // debugPrint(
-          //     'Duration: ${positionState.duration!.inMilliseconds.toDouble().toString()}');
-
-          // debugPrint("Max slider value: ${_maxSliderValue.toString()}");
-          // _currentSliderValue = 0;
           _maxSliderValue = positionState.duration!.inMilliseconds.toDouble();
         }
       });
@@ -77,16 +66,12 @@ class MediaControlsState extends ConsumerState<MediaControls> {
         }
 
         if (playbackState.isCompleted == true) {
-          // debugPrint("Completed");
           _isCompleted = true;
 
           ref
               .watch(playerProvider.notifier)
               .open(ref.watch(fileSelectedProvider));
-
-          // ref.watch(playerProvider.notifier).seek(Duration.zero);
         } else {
-          // debugPrint("Not completed");
           _isCompleted = false;
         }
       });
@@ -97,24 +82,12 @@ class MediaControlsState extends ConsumerState<MediaControls> {
           ),
           child: Column(
             children: [
+              // Build the video scroller
               Slider(
-                // value: value.position.inMilliseconds.toDouble(),
-
                 max: _maxSliderValue,
-                // max: 100,
-                value:
-                    // playerStream.when(
-                    //     data: (data) => data,
-                    //     error: (err, stack) => 0,
-                    //     loading: () => 0),
-                    // player.position.position!.inMilliseconds.toDouble(),
-                    _isSliderGrabbed ? _currentSliderValue : _videoPosition,
+                value: _isSliderGrabbed ? _currentSliderValue : _videoPosition,
                 onChangeStart: (value) => _isSliderGrabbed = true,
                 onChanged: (double value) {
-                  // PositionState positionState = PositionState();
-                  // positionState.position =
-                  //     Duration(milliseconds: value.toInt());
-                  // playerController.sink.add(positionState);
                   if (_isSliderGrabbed) {
                     playerNotifier.seek(Duration(milliseconds: value.toInt()));
                     setState(() {
@@ -134,24 +107,24 @@ class MediaControlsState extends ConsumerState<MediaControls> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Build fast rewind button
                   IconButton(
                     onPressed: () {
-                      // debugPrint("Rewind pressed");
                       playerNotifier.fastRewind();
                     },
                     icon: Icon(Icons.fast_rewind),
                   ),
+                  // Build play/pause button
                   IconButton(
                     onPressed: () {
-                      // debugPrint("Play pressed");
                       playerNotifier.playorpause();
                     },
                     icon:
                         _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
                   ),
+                  // Build fast forward button
                   IconButton(
                     onPressed: () {
-                      // debugPrint("Forward pressed");
                       playerNotifier.fastForward();
                     },
                     icon: Icon(Icons.fast_forward),

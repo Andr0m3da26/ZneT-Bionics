@@ -1,17 +1,18 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
-import 'package:providerarchitecturetest/widgets/newproject.dart';
 
+// This is the NavbarContainer widget, which is a ConsumerWidget that displays the navbar
 class NavbarContainer extends ConsumerWidget {
   ProjectOptions? selectedMenu;
 
   NavbarContainer({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Get the projectOptionsHandler notifier from the providers file
     final fileOptions = ref.watch(projectOptionsHandler.notifier);
+    // Build the NavbarContainer widget
     return SizedBox(
       height: 100,
       child: Container(
@@ -25,34 +26,33 @@ class NavbarContainer extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  // Build a NavbarButton for the file menu
                   NavbarButton(
                     tooltip: "File menu",
                     icon: Icons.insert_drive_file,
                     onSelected: (item) {
+                      // When a menu item is selected, handle the selection using the fileOptions notifier
                       fileOptions.handleSelection(item, context);
-                      // dialogBuilder(context);
+
                       debugPrint("File menu selected");
                     },
                     onOpened: () => debugPrint("File menu opened"),
                     menuItems: <PopupMenuEntry<dynamic>>[
+                      // Build 'new project' menu item
                       PopupMenuItem<dynamic>(
                         value: ProjectOptions.newProject,
                         child: const Text('New Project...'),
-                        onTap: () async {
-                          // dialogBuilder(context);
-                        },
+                        onTap: () async {},
                       ),
+                      // Build 'open project' menu item
                       PopupMenuItem<dynamic>(
                         value: ProjectOptions.openProject,
                         child: const Text('Open Project...'),
-                        onTap: () async {
-                          // debugPrint("Open Project menu item selected");
-                          // Add your code here
-                          // fileOptions.openProject();
-                        },
+                        onTap: () async {},
                       ),
                     ],
                   ),
+                  // Build a NavbarButton to toggle between the analysis screen and the graph rack screen
                   NavbarToggleButton(
                     icon1: Icons.show_chart,
                     icon2: Icons.videocam,
@@ -70,6 +70,7 @@ class NavbarContainer extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Build settings menu
                   NavbarButton(
                     tooltip: "Settings",
                     icon: Icons.settings,
@@ -78,27 +79,29 @@ class NavbarContainer extends ConsumerWidget {
                     },
                     onOpened: () => debugPrint("Settings menu opened"),
                     menuItems: <PopupMenuEntry<dynamic>>[
+                      // Build 'preferences' menu item
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.preferences,
                         child: const Text('Preferences'),
                         onTap: () async {
                           debugPrint("Preferences menu item selected");
-                          // Add your code here
+                          // TO DO
                         },
                       ),
+                      // Build 'help' menu item
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.help,
                         child: const Text('Help'),
                         onTap: () async {
                           debugPrint("Help menu item selected");
-                          // Add your code here
+                          // TO DO
                         },
                       ),
+                      // Build 'exit' menu item
                       PopupMenuItem<dynamic>(
                         value: SettingsOptions.exit,
                         child: const Text('Exit'),
                         onTap: () async {
-                          // Add your code here
                           exit(0);
                         },
                       ),
@@ -114,6 +117,7 @@ class NavbarContainer extends ConsumerWidget {
   }
 }
 
+// This is the NavbarButton widget, which is a StatelessWidget that displays a button in the navbar
 class NavbarButton extends StatelessWidget {
   final String tooltip;
   final IconData icon;
@@ -132,6 +136,7 @@ class NavbarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Build the NavbarButton widget
     return Material(
       child: PopupMenuButton(
         tooltip: tooltip,
@@ -144,16 +149,11 @@ class NavbarButton extends StatelessWidget {
         ),
         onSelected: onSelected,
         onOpened: onOpened,
-        itemBuilder: //if there are menuitems then build, else return null
-            (context) {
+        itemBuilder: (context) {
           if (menuItems != null) {
-            return
-                //build menuitems
-                menuItems!;
+            return menuItems!;
           } else {
-            return
-                //empty List<PopupMenuEntry<dynamic>> Function(BuildContext)
-                <PopupMenuEntry<dynamic>>[];
+            return <PopupMenuEntry<dynamic>>[];
           }
         },
       ),
@@ -161,6 +161,7 @@ class NavbarButton extends StatelessWidget {
   }
 }
 
+// This is the NavbarToggleButton widget, which is a StatefulWidget that displays a toggle button in the navbar
 class NavbarToggleButton extends StatefulWidget {
   final IconData icon1;
   final IconData icon2;
@@ -190,6 +191,7 @@ class _NavbarToggleButtonState extends State<NavbarToggleButton> {
 
   @override
   Widget build(BuildContext context) {
+    // Build the NavbarToggleButton widget
     return MaterialButton(
       child: SizedBox(
         height: 100,

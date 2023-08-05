@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:providerarchitecturetest/utilities/providers.dart';
 
+// This is the ContextMenu widget, which is a ConsumerWidget that displays a context menu
 class ContextMenu extends ConsumerWidget {
   final List<String> items;
   final String path;
@@ -9,26 +10,17 @@ class ContextMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Get the fileOptionsHandler notifier from the provider
     final fileOptions = ref.watch(fileOptionsHandler.notifier);
+    // Build the popup menu button
     return PopupMenuButton(
-      // Callback that sets the selected popup menu item.
+      // Handle the selected item
       onSelected: (String item) {
         debugPrint(item.toString());
-        // switch (item) {
-        //   case "Add file...":
-        //     debugPrint("Add file...");
-        //     break;
-        //   case "Rename":
-        //     debugPrint("Rename");
-        //     break;
-        //   case "Delete":
-        //     debugPrint("Delete");
-        //     break;
-        //   default:
-        //     debugPrint("Unknown");
-        // }
+
         fileOptions.handleSelection(item, path);
       },
+      // Build the popup menu items
       itemBuilder: (BuildContext context) => items
           .map((item) => PopupMenuItem<String>(
                 value: item,

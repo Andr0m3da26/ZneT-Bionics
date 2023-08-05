@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// This is the IconButtonWithAnimatedToolbar widget, which is a StatefulWidget that displays a dropdown menu
 class IconButtonWithAnimatedToolbar extends StatefulWidget {
   const IconButtonWithAnimatedToolbar(
       {Key? key,
@@ -12,12 +13,17 @@ class IconButtonWithAnimatedToolbar extends StatefulWidget {
   State<IconButtonWithAnimatedToolbar> createState() =>
       _IconButtonWithAnimatedToolbarState();
 
+  // This callback is called when the camera option is selected
   final VoidCallback onCameraOptionSelected;
+  // This callback is called when the camera option is deselected
   final VoidCallback onCameraOptionDeselected;
+  // This callback is called when the graph option is selected
   final VoidCallback onGraphOptionSelected;
+  // This callback is called when the graph option is deselected
   final VoidCallback onGraphOptionDeselected;
 }
 
+// This is the _IconButtonWithAnimatedToolbarState class, which is a State that manages the state of the IconButtonWithAnimatedToolbar widget
 class _IconButtonWithAnimatedToolbarState
     extends State<IconButtonWithAnimatedToolbar> {
   bool _isToolbarExtended = false;
@@ -28,6 +34,7 @@ class _IconButtonWithAnimatedToolbarState
 
   @override
   Widget build(BuildContext context) {
+    // Build the dropdown menu widget
     return Stack(
       children: [
         Positioned(
@@ -46,6 +53,7 @@ class _IconButtonWithAnimatedToolbarState
           ),
         ),
         Column(children: [
+          // Build the dropdown menu button
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: FloatingActionButton(
@@ -57,6 +65,7 @@ class _IconButtonWithAnimatedToolbarState
                 },
                 child: Icon(Icons.menu)),
           ),
+          // Build the camera button
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: AnimatedOpacity(
@@ -94,6 +103,7 @@ class _IconButtonWithAnimatedToolbarState
                   )),
             ),
           ),
+          // Build the graph button
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: AnimatedOpacity(
